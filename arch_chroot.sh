@@ -5,7 +5,7 @@ ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 hwclock --systohc
 
 #Localization
-sed -i '/$LANGUAGE/s/^#e/e/g' /etc/locale.gen
+sed -i "/$LANGUAGE/s/^#e/e/g" /etc/locale.gen
 locale-gen
 echo "LANG=$LANGUAGE" >> /etc/locale.conf
 echo "KEYMAP=$KEYBOARD" >> /etc/vconsole.conf
