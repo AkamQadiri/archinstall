@@ -47,6 +47,7 @@ systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
 
 #UFW
 ufw default deny
+ufw enable
 
 #Update makepkg.conf to speed up compilation time
 sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
