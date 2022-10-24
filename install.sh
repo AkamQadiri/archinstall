@@ -24,7 +24,7 @@ export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils picom"
 export DRIVER_PACKAGES="intel-ucode libva-intel-driver vulkan-intel xf86-video-nouveau libva-mesa-driver mesa mesa-utils"
 export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-font-awesome"
-export ADDITIONAL_PACKAGES="git vim htop firefox feh python-pywal"
+export ADDITIONAL_PACKAGES="git vim htop firefox feh python-pywal playerctl"
 
 #YAY Packages will only be installed if git is present
 export YAY_PACKAGES="pfetch nsxiv nnn-icons" 
