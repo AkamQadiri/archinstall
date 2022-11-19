@@ -49,7 +49,10 @@ systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
 ufw default deny
 ufw enable
 
-#Update makepkg.conf to speed up compilation time
+#Optimize pacman.conf
+sed -i 's/#ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
+
+#Optimize makepkg.conf to speed up compilation time
 sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
 sed -i 's/#MAKEFLAGS=.*/MAKEFLAGS="-j$(nproc)"/' /etc/makepkg.conf
 
