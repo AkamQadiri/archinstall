@@ -1,5 +1,12 @@
 #!/bin/sh
 
+#Optimize pacman.conf
+sed -i 's/#ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
+
+#Optimize makepkg.conf to speed up compilation time
+sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
+sed -i 's/#MAKEFLAGS=.*/MAKEFLAGS="-j$(nproc)"/' /etc/makepkg.conf
+
 #Time zone
 ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 hwclock --systohc
@@ -21,7 +28,7 @@ echo "127.0.0.1      $HOSTNAME.localdomain $HOSTNAME" >> /etc/hosts
 useradd -m $USER_NAME
 echo "$USER_NAME:$USER_PASSWORD" | chpasswd
 
-#Essential packages
+#Install packages
 pacman --noconfirm -S $X_PACKAGES $DRIVER_PACKAGES $AUDIO_PACKAGES $FONT_PACKAGES $ADDITIONAL_PACKAGES
 pacman --noconfirm -S grub efibootmgr networkmanager ufw
 
@@ -48,13 +55,6 @@ systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
 #UFW
 ufw default deny
 ufw enable
-
-#Optimize pacman.conf
-sed -i 's/#ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
-
-#Optimize makepkg.conf to speed up compilation time
-sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
-sed -i 's/#MAKEFLAGS=.*/MAKEFLAGS="-j$(nproc)"/' /etc/makepkg.conf
 
 #Check if git is installed
 if command -v git &> /dev/null; then

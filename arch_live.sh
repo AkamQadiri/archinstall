@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#Optimize pacman.conf
+sed -i 's/#ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
+
 #Format the partitions
 mkfs.fat -F 32 $EFI_PARTITION
 mkfs.ext4 -F $ROOT_PARTITION
