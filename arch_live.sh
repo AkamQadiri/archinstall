@@ -1,7 +1,19 @@
 #!/bin/sh
 
+#Set the console keyboard layout
+loadkeys $KEYBOARD
+
+#Update the system clock
+timedatectl set-ntp true
+
+#Partition the disks
+sfdisk $DEVICE < disk.sfdisk
+
+#Installing keyring to avoid gpg error messages
+pacman --noconfirm -Sy archlinux-keyring
+
 #Optimize pacman.conf
-sed -i 's/#ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
+sed -i "s/#ParallelDownloads.*/ParallelDownloads = $PARALLELDOWNLOADS/" /etc/pacman.conf
 
 #Format the partitions
 mkfs.fat -F 32 $EFI_PARTITION

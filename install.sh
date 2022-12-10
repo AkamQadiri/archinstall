@@ -8,6 +8,7 @@ export HOSTNAME="archtop"
 export LANGUAGE="en_US.UTF-8"
 export KEYBOARD="no"
 export TIMEZONE="Europe/Oslo"
+export PARALLELDOWNLOADS="15"
 
 #User
 export USER_NAME="akam"
@@ -35,14 +36,5 @@ export SYSTEMCTL_GLOBAL_SERVICES="pipewire pipewire-media-session pipewire-pulse
 #Git settings (Only if ADDITIONAL_PACKAGES contains git package)
 export GIT_EMAIL="akamq@hotmail.com"
 export GIT_NAME="AkamQadiri"
-
-#Set the console keyboard layout
-loadkeys $KEYBOARD
-
-#Update the system clock
-timedatectl set-ntp true
-
-#Partition the disks
-sfdisk $DEVICE < disk.sfdisk
 
 ./arch_live.sh

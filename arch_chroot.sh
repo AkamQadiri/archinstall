@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Optimize pacman.conf
-sed -i 's/#ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
+sed -i "s/#ParallelDownloads.*/ParallelDownloads = $PARALLELDOWNLOADS/" /etc/pacman.conf
 
 #Optimize makepkg.conf to speed up compilation time
 sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
