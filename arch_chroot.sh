@@ -73,7 +73,7 @@ if command -v git &> /dev/null; then
  rm -r /home/$USER_NAME/yay-bin
 
  #Install YAY Packages
- su $USER_NAME -c "yay -S $YAY_PACKAGES --answerclean All --answerdiff None --mflags '--noconfirm'"
+ su $USER_NAME -c "echo y | yay -S $YAY_PACKAGES --removemake --answerclean All --answerdiff None --mflags '--noconfirm'"
 
  #Install and build from repos
  su $USER_NAME -c "cd ~; mkdir source"
