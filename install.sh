@@ -21,7 +21,7 @@ export EFI_PARTITION="$DEVICE"p1
 export ROOT_PARTITION="$DEVICE"p2
 
 #Packages
-export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils xdg-user-dirs numlockx xdotool perl-file-mimeinfo picom lxsession-gtk3 unclutter"
+export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils numlockx xdotool perl-file-mimeinfo picom lxsession-gtk3 unclutter"
 export DRIVER_PACKAGES="intel-ucode mesa mesa-utils libva-mesa-driver libva-vdpau-driver libva-intel-driver vulkan-icd-loader vulkan-intel nvidia nvidia-utils"
 export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack noise-suppression-for-voice pavucontrol"
 export FONT_PACKAGES="ttf-dejavu ttf-liberation noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-font-awesome"
