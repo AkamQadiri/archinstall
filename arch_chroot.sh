@@ -12,7 +12,7 @@ ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 hwclock --systohc
 
 #Localization
-sed -i "/$LANGUAGE/s/^#e/e/g" /etc/locale.gen
+sed -i "/$LANGUAGE/s/^#//" /etc/locale.gen
 locale-gen
 echo "LANG=$LANGUAGE" >> /etc/locale.conf
 echo "KEYMAP=$KEYBOARD" >> /etc/vconsole.conf
@@ -56,34 +56,55 @@ systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
 ufw default deny
 ufw enable
 
+if [ ! -z "$LIBVIRT_PACKAGES" ]; then
+    pacman --noconfirm -S $LIBVIRT_PACKAGES
+    sed -i '/#unix_sock_group/s/^#//' /etc/libvirt/libvirtd.conf
+    sed -i '/#unix_sock_ro_perms/s/^#//' /etc/libvirt/libvirtd.conf
+    sed -i '/#unix_sock_rw_perms/s/^#//' /etc/libvirt/libvirtd.conf
+    sed -i 's/#auth_unix_ro.*/auth_unix_ro = "none"/' /etc/libvirt/libvirtd.conf
+    sed -i 's/#auth_unix_rw.*/auth_unix_rw = "none"/' /etc/libvirt/libvirtd.conf
+    systemctl enable libvirtd
+    virsh net-autostart default
+    usermod -aG libvirt $USER_NAME
+fi
+
 #Check if git is installed
-if command -v git &> /dev/null; then
- #Configure git
- su $USER_NAME -c "git config --global user.email $GIT_EMAIL"
- su $USER_NAME -c "git config --global user.name $GIT_NAME"
- su $USER_NAME -c "git config --global credential.helper store"
+if [ command -v git &> /dev/null ]; then
 
- #Install yay
- su $USER_NAME -c "cd ~; git clone https://aur.archlinux.org/yay-bin.git; cd yay-bin; makepkg -s"
+    #Configure git
+    su $USER_NAME -c "git config --global credential.helper store"
 
- cd /home/$USER_NAME/yay-bin
- pacman --noconfirm -U *.pkg.tar.zst
+    if [ -z "$GIT_EMAIL" ]; then
+        su $USER_NAME -c "git config --global user.email $GIT_EMAIL"
+    fi
 
- #Delete yay directory
- rm -r /home/$USER_NAME/yay-bin
+    if [ -z "$GIT_NAME" ]; then
+        su $USER_NAME -c "git config --global user.name $GIT_NAME"
+    fi
 
- #Install YAY Packages
- su $USER_NAME -c "echo y | yay -S $YAY_PACKAGES --removemake --answerclean All --answerdiff None --mflags '--noconfirm'"
+    if [ ! -z "$YAY_PACKAGES" ]; then
+        #Install yay
+        su $USER_NAME -c "cd ~; git clone https://aur.archlinux.org/yay-bin.git; cd yay-bin; makepkg -s"
 
- #Install and build from repos
- su $USER_NAME -c "cd ~; mkdir source"
+        cd /home/$USER_NAME/yay-bin
+        pacman --noconfirm -U *.pkg.tar.zst
 
- repositories=("dwm" "dwmblocks-async" "st" "dmenu" "slock")
- for repo in ${repositories[@]}; do
-  su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$repo; cd $repo; sudo make clean install; sudo make clean;"
- done
+        #Delete yay directory
+        rm -r /home/$USER_NAME/yay-bin
 
- su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/dotfiles; cd dotfiles; ./install.sh"
+        #Install YAY Packages
+        su $USER_NAME -c "echo y | yay -S $YAY_PACKAGES --removemake --answerclean All --answerdiff None --mflags '--noconfirm'"
+    fi
+
+    #Install and build from repos
+    su $USER_NAME -c "cd ~; mkdir source"
+
+    repositories=($GITHUB_REPOSITORIES)
+    for repo in ${repositories[@]}; do
+        su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$repo; cd $repo; sudo make clean install; sudo make clean;"
+    done
+
+    su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$GITHUB_DOTFILES_REPOSITORY; cd $GITHUB_DOTFILES_REPOSITORY; ./install.sh"
 fi
 
 #Should be removed now that the environment has been set up

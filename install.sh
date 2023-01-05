@@ -26,15 +26,20 @@ export DRIVER_PACKAGES="intel-ucode mesa mesa-utils libva-mesa-driver libva-vdpa
 export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack noise-suppression-for-voice pavucontrol"
 export FONT_PACKAGES="ttf-dejavu ttf-liberation noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-font-awesome"
 export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal playerctl"
+#Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
+#export LIBVIRT_PACKAGES="libvirt qemu-desktop qemu-emulators-full dnsmasq dmidecode bridge-utils openbsd-netcat libguestfs virt-manager"
 
-#YAY Packages will only be installed if git is present
+#Comment out the line below if you don't want to install yay or any packages from the AUR (git needs to be present as it's needed to download and install yay)
 export YAY_PACKAGES="pfetch nnn-icons czkawka-gui-bin" 
 
 #Systemctl services
 export SYSTEMCTL_GLOBAL_SERVICES="pipewire pipewire-media-session pipewire-pulse"
 
-#Git settings (Only if ADDITIONAL_PACKAGES contains git package)
+#Git settings (These settings will only be used if git is present)
+#Install GITHUB_REPOSITORIES and GITHUB_DOTFILES_REPOSITORY from GitHub with the help of GIT_NAME
 export GIT_EMAIL="akamq@hotmail.com"
 export GIT_NAME="AkamQadiri"
+export GITHUB_REPOSITORIES="dwm dwmblocks-async st dmenu slock" #A MAKEFILE is needed for each repository
+export GITHUB_DOTFILES_REPOSITORY="dotfiles" #Have install.sh in the top level directory of the repository
 
 ./arch_live.sh
