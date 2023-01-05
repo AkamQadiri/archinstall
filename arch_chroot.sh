@@ -74,11 +74,11 @@ if [ command -v git &> /dev/null ]; then
     #Configure git
     su $USER_NAME -c "git config --global credential.helper store"
 
-    if [ -z "$GIT_EMAIL" ]; then
+    if [ ! -z "$GIT_EMAIL" ]; then
         su $USER_NAME -c "git config --global user.email $GIT_EMAIL"
     fi
 
-    if [ -z "$GIT_NAME" ]; then
+    if [ ! -z "$GIT_NAME" ]; then
         su $USER_NAME -c "git config --global user.name $GIT_NAME"
     fi
 
