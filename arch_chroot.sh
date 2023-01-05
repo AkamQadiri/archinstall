@@ -64,7 +64,6 @@ if [ ! -z "$LIBVIRT_PACKAGES" ]; then
     sed -i 's/#auth_unix_ro.*/auth_unix_ro = "none"/' /etc/libvirt/libvirtd.conf
     sed -i 's/#auth_unix_rw.*/auth_unix_rw = "none"/' /etc/libvirt/libvirtd.conf
     systemctl enable libvirtd
-    virsh net-autostart default
     usermod -aG libvirt $USER_NAME
 fi
 
