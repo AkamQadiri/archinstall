@@ -69,7 +69,7 @@ if [ ! -z "$LIBVIRT_PACKAGES" ]; then
 fi
 
 #Check if git is installed
-if [ command -v git &> /dev/null ]; then
+if command -v git &> /dev/null; then
 
     #Configure git
     su $USER_NAME -c "git config --global credential.helper store"
