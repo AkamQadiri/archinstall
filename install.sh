@@ -22,12 +22,12 @@ export ROOT_PARTITION="$DEVICE"p2
 
 #Packages
 export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils numlockx xdotool perl-file-mimeinfo picom lxsession-gtk3 unclutter"
-export DRIVER_PACKAGES="intel-ucode mesa mesa-utils libva-mesa-driver libva-vdpau-driver libva-intel-driver vulkan-icd-loader vulkan-intel nvidia nvidia-utils"
+export DRIVER_PACKAGES="amd-ucode mesa mesa-utils libva-mesa-driver mesa-vdpau libva-vdpau-driver vulkan-icd-loader vulkan-radeon xf86-video-amdgpu nvidia nvidia-utils"
 export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack noise-suppression-for-voice pavucontrol"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-liberation ttf-hack ttf-font-awesome"
 export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal playerctl"
 #Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
-#export LIBVIRT_PACKAGES="qemu-desktop qemu-emulators-full dnsmasq dmidecode bridge-utils openbsd-netcat virt-manager"
+#export LIBVIRT_PACKAGES="qemu-desktop dnsmasq dmidecode bridge-utils openbsd-netcat virt-manager"
 
 #Comment out the line below if you don't want to install yay or any packages from the AUR (git needs to be present as it's needed to download and install yay)
 export YAY_PACKAGES="pfetch nnn-icons czkawka-gui-bin" 
