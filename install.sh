@@ -22,7 +22,7 @@ export ROOT_PARTITION="$DEVICE"p2
 
 #Packages
 export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils numlockx xdotool perl-file-mimeinfo picom lxsession-gtk3 unclutter"
-export DRIVER_PACKAGES="amd-ucode mesa mesa-utils libva-mesa-driver mesa-vdpau libva-vdpau-driver vulkan-icd-loader vulkan-radeon xf86-video-amdgpu nvidia nvidia-utils"
+export DRIVER_PACKAGES="amd-ucode mesa mesa-utils libva-mesa-driver mesa-vdpau libva-vdpau-driver vulkan-icd-loader vulkan-radeon"
 export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack pavucontrol"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-liberation ttf-hack ttf-font-awesome"
 export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal playerctl"
