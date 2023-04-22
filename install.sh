@@ -33,7 +33,7 @@ export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal play
 export YAY_PACKAGES="pfetch nnn-icons czkawka-gui-bin" 
 
 #Systemctl services
-export SYSTEMCTL_GLOBAL_SERVICES="pipewire pipewire-media-session pipewire-pulse"
+export SYSTEMCTL_GLOBAL_SERVICES="pipewire pipewire-pulse wireplumber"
 
 #Git settings (These settings will only be used if git is present)
 #Install GITHUB_REPOSITORIES and GITHUB_DOTFILES_REPOSITORY from GitHub with the help of GIT_NAME
