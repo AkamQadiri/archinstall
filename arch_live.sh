@@ -1,4 +1,5 @@
 #!/bin/sh
+exec &> >(tee -a arch_live.log)
 
 #Set the console keyboard layout
 loadkeys $KEYBOARD

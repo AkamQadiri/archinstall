@@ -1,4 +1,5 @@
 #!/bin/sh
+exec &> >(tee -a arch_chroot.log)
 
 #Optimize pacman.conf
 sed -i "s/#ParallelDownloads.*/ParallelDownloads = $PARALLELDOWNLOADS/" /etc/pacman.conf
