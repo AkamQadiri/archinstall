@@ -30,8 +30,7 @@ useradd -m $USER_NAME
 echo "$USER_NAME:$USER_PASSWORD" | chpasswd
 
 #Install packages
-pacman --noconfirm -S $X_PACKAGES $DRIVER_PACKAGES $AUDIO_PACKAGES $FONT_PACKAGES $ADDITIONAL_PACKAGES
-pacman --noconfirm -S grub efibootmgr networkmanager ufw
+pacman --noconfirm -S $X_PACKAGES $DRIVER_PACKAGES $AUDIO_PACKAGES $FONT_PACKAGES $ADDITIONAL_PACKAGES grub efibootmgr networkmanager ufw
 
 #Add user to groups
 usermod -aG $USER_GROUPS $USER_NAME

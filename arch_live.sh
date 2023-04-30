@@ -33,9 +33,10 @@ genfstab -U /mnt >> /mnt/etc/fstab
 cp arch_chroot.sh /mnt/root/arch_chroot.sh
 arch-chroot /mnt /root/arch_chroot.sh
 
-#Move log files to root
-mv arch_live.log /mnt/root/
-mv /mnt/arch_chroot.log /mnt/root/
+#Move log files
+mkdir /mnt/var/log/archinstall
+mv arch_live.log /mnt/var/log/archinstall
+mv /mnt/arch_chroot.log /mnt/var/log/archinstall
 
 #Clean up and unmount
 rm /mnt/root/arch_chroot.sh
