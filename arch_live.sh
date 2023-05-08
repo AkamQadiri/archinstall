@@ -24,7 +24,7 @@ mkfs.ext4 -F $ROOT_PARTITION
 mount $ROOT_PARTITION /mnt
 
 #Install essential packages
-pacstrap /mnt base base-devel linux linux-firmware
+pacstrap /mnt base base-devel linux linux-headers linux-firmware
 
 #Fstab
 genfstab -U /mnt >> /mnt/etc/fstab
