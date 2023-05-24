@@ -56,7 +56,7 @@ systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
 ufw default deny
 ufw enable
 
-if [ ! -z "$LIBVIRT_PACKAGES" ]; then
+if [[ -n "$LIBVIRT_PACKAGES" ]]; then
     pacman --noconfirm -S $LIBVIRT_PACKAGES
     sed -i '/#unix_sock_group/s/^#//' /etc/libvirt/libvirtd.conf
     sed -i '/#unix_sock_ro_perms/s/^#//' /etc/libvirt/libvirtd.conf
@@ -73,15 +73,15 @@ if command -v git &> /dev/null; then
     #Configure git
     su $USER_NAME -c "git config --global credential.helper store"
 
-    if [ ! -z "$GIT_EMAIL" ]; then
+    if [[ -n "$GIT_EMAIL" ]]; then
         su $USER_NAME -c "git config --global user.email $GIT_EMAIL"
     fi
 
-    if [ ! -z "$GIT_NAME" ]; then
+    if [[ -n "$GIT_NAME" ]]; then
         su $USER_NAME -c "git config --global user.name $GIT_NAME"
     fi
 
-    if [ ! -z "$YAY_PACKAGES" ]; then
+    if [[ -n "$YAY_PACKAGES" ]]; then
         #Install yay
         su $USER_NAME -c "cd ~; git clone https://aur.archlinux.org/yay-bin.git; cd yay-bin; makepkg -s"
 
@@ -98,12 +98,16 @@ if command -v git &> /dev/null; then
     #Install and build from repos
     su $USER_NAME -c "cd ~; mkdir source"
 
-    repositories=($GITHUB_REPOSITORIES)
-    for repo in ${repositories[@]}; do
-        su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$repo; cd $repo; sudo make clean install; sudo make clean;"
-    done
+    if [[ -n "$GITHUB_REPOSITORIES" ]]; then
+        repositories=($GITHUB_REPOSITORIES)
+        for repo in ${repositories[@]}; do
+            su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$repo; cd $repo; sudo make clean install; sudo make clean;"
+        done
+    fi
 
-    su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$GITHUB_DOTFILES_REPOSITORY; cd $GITHUB_DOTFILES_REPOSITORY; ./install.sh"
+    if [[ -n "$GITHUB_DOTFILES_REPOSITORY" ]]; then
+        su $USER_NAME -c "cd ~/source; git clone https://github.com/$GIT_NAME/$GITHUB_DOTFILES_REPOSITORY; cd $GITHUB_DOTFILES_REPOSITORY; ./install.sh"
+    fi
 fi
 
 #Should be removed now that the environment has been set up

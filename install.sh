@@ -16,6 +16,8 @@ export USER_PASSWORD="secret"
 export USER_GROUPS="wheel,uucp"
 
 #Device (lsblk to check)
+#The partition naming conventions may vary based on your drive type.
+#NVME drives use p1, p2, p3 ... etc
 export DEVICE="/dev/nvme0n1"
 export EFI_PARTITION="$DEVICE"p1
 export ROOT_PARTITION="$DEVICE"p2
