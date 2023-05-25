@@ -5,8 +5,11 @@ This repository provides a streamlined and personalized approach to installing a
 ## Features
 
 - **Automated Installation**: The `install.sh` script automatically handles system configuration, partitioning, package selection, user setup, and more, streamlining the installation process.
+
 - **Customization**: Tailor the installation to your preferences by modifying the script and associated files to meet your specific requirements.
+
 - **Virtualization Support**: Optional installation and configuration of libvirt allows you to explore virtualization capabilities on your Arch Linux system.
+
 - **Installation Log**: The installation process logs to the primary installation disk, allowing you to check if everything went smoothly.
 
 ## Customization and Additional Steps
@@ -20,16 +23,21 @@ This repository provides a streamlined and personalized approach to installing a
 ## Getting Started
 
 1. Boot your computer into the Arch Linux installation ISO.
+
 2. Once booted into the Arch Linux installation environment, install Git by running the following command:
    ```shell
    pacman -Sy git
    ```
+
 3. Clone this repository to your local machine by running the following command (Replace `[URL]` with the actual repository URL):
    ```shell
    git clone [URL]
    ```
+
 4. Navigate to the cloned repository directory.
+
 5. Customize the `install.sh` script and associated files to fit your requirements.
+
 6. Execute the `install.sh` script by running the following command:
    ```shell
    source install.sh
