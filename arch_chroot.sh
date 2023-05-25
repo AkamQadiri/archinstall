@@ -1,5 +1,4 @@
 #!/bin/sh
-exec &> >(tee -a arch_chroot.log)
 
 #Optimize pacman.conf
 sed -i "s/#ParallelDownloads.*/ParallelDownloads = $PARALLELDOWNLOADS/" /etc/pacman.conf
@@ -56,6 +55,7 @@ systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
 ufw default deny
 ufw enable
 
+#libvirt configuration
 if [[ -n "$LIBVIRT_PACKAGES" ]]; then
     pacman --noconfirm -S $LIBVIRT_PACKAGES
     sed -i '/#unix_sock_group/s/^#//' /etc/libvirt/libvirtd.conf

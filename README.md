@@ -35,7 +35,7 @@ This repository provides a streamlined and personalized approach to installing a
    source install.sh
    ```
 
-(Optional) After installation, you can check the installation log located at `/var/log/archinstall` on the `$DEVICE` disk to ensure everything went smoothly.
+(Optional) After installation, you can check the archinstall log located at `/var/log/archinstall.log` on the `$DEVICE` disk to ensure everything went smoothly.
 
 ## Troubleshooting
 

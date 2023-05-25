@@ -1,5 +1,5 @@
 #!/bin/sh
-exec &> >(tee -a arch_live.log)
+exec &> >(tee -a archinstall.log)
 
 #Set the console keyboard layout
 loadkeys $KEYBOARD
@@ -33,10 +33,8 @@ genfstab -U /mnt >> /mnt/etc/fstab
 cp arch_chroot.sh /mnt/root/arch_chroot.sh
 arch-chroot /mnt /root/arch_chroot.sh
 
-#Move log files
-mkdir /mnt/var/log/archinstall
-mv arch_live.log /mnt/var/log/archinstall
-mv /mnt/arch_chroot.log /mnt/var/log/archinstall
+#Move log file
+mv archinstall.log /mnt/var/log/archinstall.log
 
 #Clean up and unmount
 rm /mnt/root/arch_chroot.sh

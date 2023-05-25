@@ -25,7 +25,7 @@ export ROOT_PARTITION="$DEVICE"p2
 #Packages
 export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils xdg-desktop-portal xdg-desktop-portal-gtk rtkit numlockx xdotool perl-file-mimeinfo picom lxsession-gtk3 unclutter"
 export DRIVER_PACKAGES="amd-ucode mesa mesa-utils libva-mesa-driver mesa-vdpau libva-vdpau-driver vulkan-icd-loader vulkan-radeon"
-export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack pavucontrol"
+export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-liberation ttf-hack ttf-font-awesome"
 export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal playerctl"
 #Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
@@ -35,7 +35,7 @@ export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal play
 export YAY_PACKAGES="pfetch nnn-icons czkawka-gui-bin" 
 
 #Systemctl services
-export SYSTEMCTL_GLOBAL_SERVICES="pipewire pipewire-pulse wireplumber"
+export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"
 
 #Git settings (These settings will only be used if git is present)
 #Install GITHUB_REPOSITORIES and GITHUB_DOTFILES_REPOSITORY from GitHub with the help of GIT_NAME
