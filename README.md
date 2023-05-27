@@ -1,6 +1,6 @@
-# Personalized Arch Linux Installation
+# Arch Linux Automated Installation
 
-This repository provides a streamlined and personalized approach to installing and configuring Arch Linux. It includes an automated installation script and customizable configurations, making it a great template for creating your own automated installation process.
+This repository provides a streamlined approach to installing and configuring Arch Linux. It includes an automated installation script and customizable configurations, making it a great template for creating your own automated installation process.
 
 ## Features
 
