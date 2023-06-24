@@ -71,7 +71,7 @@ fi
 if command -v git &> /dev/null; then
 
     #Configure git
-    su $USER_NAME -c "git config --global credential.helper store"
+    su $USER_NAME -c "git config --global credential.helper /usr/lib/git-core/git-credential-libsecret"
 
     if [[ -n "$GIT_EMAIL" ]]; then
         su $USER_NAME -c "git config --global user.email $GIT_EMAIL"

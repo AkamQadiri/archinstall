@@ -23,16 +23,16 @@ export EFI_PARTITION="$DEVICE"p1
 export ROOT_PARTITION="$DEVICE"p2
 
 #Packages
-export X_PACKAGES="xorg xorg-xinit xorg-apps xdg-utils xdg-desktop-portal xdg-desktop-portal-gtk rtkit numlockx xdotool perl-file-mimeinfo picom lxsession-gtk3 unclutter"
-export DRIVER_PACKAGES="amd-ucode mesa mesa-utils libva-mesa-driver mesa-vdpau libva-vdpau-driver vulkan-icd-loader vulkan-radeon"
-export AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol"
-export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-liberation ttf-hack ttf-font-awesome"
-export ADDITIONAL_PACKAGES="zip unzip git vim htop firefox feh python-pywal playerctl"
+export X_PACKAGES="xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils gnome-keyring libsecret lxsession-gtk3 numlockx perl-file-mimeinfo picom rtkit unclutter xdotool xorg xorg-apps xorg-xinit"
+export DRIVER_PACKAGES="amd-ucode libva-mesa-driver libva-vdpau-driver mesa mesa-utils mesa-vdpau vulkan-icd-loader vulkan-radeon"
+export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
+export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-font-awesome ttf-hack ttf-liberation"
+export ADDITIONAL_PACKAGES="feh firefox git htop playerctl python-pywal unzip vim zip"
 #Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
-#export LIBVIRT_PACKAGES="qemu-desktop dnsmasq dmidecode bridge-utils openbsd-netcat virt-manager swtpm libguestfs"
+#export LIBVIRT_PACKAGES="bridge-utils dnsmasq dmidecode libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
 
 #Comment out the line below if you don't want to install yay or any packages from the AUR (git needs to be present as it's needed to download and install yay)
-export YAY_PACKAGES="pfetch nnn-icons czkawka-gui-bin" 
+export YAY_PACKAGES="czkawka-gui-bin nnn-icons pfetch"
 
 #Systemctl services
 export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"
