@@ -41,7 +41,7 @@ export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wirepl
 #Install GITHUB_REPOSITORIES and GITHUB_DOTFILES_REPOSITORY from GitHub with the help of GIT_NAME
 export GIT_EMAIL="akamq@hotmail.com"
 export GIT_NAME="AkamQadiri"
-export GITHUB_REPOSITORIES="dwm dwmblocks-async st dmenu slock" #A MAKEFILE is needed for each repository
+export GITHUB_REPOSITORIES="dwm dwmblocks-async st dmenu slock hyperx-cloud-flight" #A MAKEFILE is needed for each repository
 export GITHUB_DOTFILES_REPOSITORY="dotfiles" #Have install.sh in the top level directory of the repository
 
 ./arch_live.sh
