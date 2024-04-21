@@ -27,7 +27,7 @@ export X_PACKAGES="xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils gnome-key
 export DRIVER_PACKAGES="amd-ucode libva-mesa-driver libva-vdpau-driver mesa mesa-utils mesa-vdpau vulkan-icd-loader vulkan-radeon"
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-font-awesome ttf-hack ttf-liberation"
-export ADDITIONAL_PACKAGES="feh firefox git htop playerctl python-pywal unzip vim zip"
+export ADDITIONAL_PACKAGES="hdparm feh firefox git git-lfs htop playerctl python-pywal unzip vim zip"
 #Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
 #export LIBVIRT_PACKAGES="bridge-utils dnsmasq dmidecode libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
 

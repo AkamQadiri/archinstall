@@ -73,6 +73,11 @@ if command -v git &> /dev/null; then
     #Configure git
     su $USER_NAME -c "git config --global credential.helper /usr/lib/git-core/git-credential-libsecret"
 
+    #Check if git lfs is installed
+    if command -v git-lfs &> /dev/null; then
+        su $USER_NAME -c "git lfs install"
+    fi
+
     if [[ -n "$GIT_EMAIL" ]]; then
         su $USER_NAME -c "git config --global user.email $GIT_EMAIL"
     fi
