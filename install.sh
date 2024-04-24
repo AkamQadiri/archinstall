@@ -27,12 +27,16 @@ export X_PACKAGES="gnome-keyring lxsession-gtk3 numlockx perl-file-mimeinfo pico
 export DRIVER_PACKAGES="amd-ucode libva-mesa-driver libva-vdpau-driver mesa mesa-utils mesa-vdpau vulkan-icd-loader vulkan-radeon"
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-dejavu ttf-font-awesome ttf-hack ttf-liberation"
-export ADDITIONAL_PACKAGES="feh firefox git git-lfs hdparm htop mpv playerctl python-pywal unzip vim zip"
+export ADDITIONAL_PACKAGES="feh firefox git git-lfs hdparm htop jq mpv playerctl python-pywal unzip vim zip"
 #Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
 #export LIBVIRT_PACKAGES="bridge-utils dmidecode dnsmasq libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
 
-#Comment out the line below if you don't want to install yay or any packages from the AUR (git needs to be present as it's needed to download and install yay)
-export YAY_PACKAGES="czkawka-gui-bin nnn-icons pfetch"
+#iperf3 and sysbench is for hardinfo2
+#libheif is for czkawka-gui-bin
+#nsxiv is for nnn-icons
+export AUR_DEPENDENCIES="iperf3 libheif nsxiv sysbench"
+#Comment out the line below if you don't want to install yay, any packages from the AUR or AUR_DEPENDENCIES (git needs to be present as it's needed to download and install yay)
+export YAY_PACKAGES="czkawka-gui-bin hardinfo2 nnn-icons pfetch"
 
 #Systemctl services
 export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"

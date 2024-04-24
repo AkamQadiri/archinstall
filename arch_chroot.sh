@@ -96,6 +96,9 @@ if command -v git &> /dev/null; then
         #Delete yay directory
         rm -r /home/$USER_NAME/yay-bin
 
+        #Install AUR_DEPENDENCIES
+        pacman --noconfirm -S $AUR_DEPENDENCIES
+
         #Install YAY Packages
         su $USER_NAME -c "yay -S $YAY_PACKAGES --removemake --answerclean All --answerdiff None --noconfirm"
     fi
