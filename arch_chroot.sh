@@ -29,7 +29,7 @@ useradd -m $USER_NAME
 echo "$USER_NAME:$USER_PASSWORD" | chpasswd
 
 #Install packages
-pacman --noconfirm -S $X_PACKAGES $DRIVER_PACKAGES $AUDIO_PACKAGES $FONT_PACKAGES $ADDITIONAL_PACKAGES grub efibootmgr networkmanager ufw
+pacman --noconfirm -S $X_PACKAGES $DRIVER_PACKAGES $AUDIO_PACKAGES $FONT_PACKAGES $ADDITIONAL_PACKAGES grub efibootmgr networkmanager
 
 #Add user to groups
 usermod -aG $USER_GROUPS $USER_NAME
@@ -48,12 +48,8 @@ sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 #Systemctl services
-systemctl enable NetworkManager ufw
+systemctl enable NetworkManager
 systemctl --global enable $SYSTEMCTL_GLOBAL_SERVICES
-
-#UFW
-ufw default deny
-ufw enable
 
 #libvirt configuration
 if [[ -n "$LIBVIRT_PACKAGES" ]]; then
