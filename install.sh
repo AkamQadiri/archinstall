@@ -35,6 +35,11 @@ export ADDITIONAL_PACKAGES="feh firefox git git-lfs hdparm htop jq mpv playerctl
 #Uncomment the line below to install and configure libvirt (Adds the user to libvirt group automatically)
 #export LIBVIRT_PACKAGES="bridge-utils dmidecode dnsmasq libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
 
+#Add qemu-guest-agent to ADDITIONAL_PACKAGES if machine is a VM
+if grep -qE 'vmx|svm' /proc/cpuinfo; then
+    export ADDITIONAL_PACKAGES="$ADDITIONAL_PACKAGES qemu-guest-agent"
+fi
+
 #iperf3 and sysbench is for hardinfo2
 #libheif is for czkawka-gui-bin
 #nsxiv is for nnn-icons
