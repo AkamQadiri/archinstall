@@ -6,6 +6,7 @@ sed -i "s/#ParallelDownloads.*/ParallelDownloads = $PARALLELDOWNLOADS/" /etc/pac
 #Optimize makepkg.conf to speed up compilation time
 sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
 sed -i 's/#MAKEFLAGS=.*/MAKEFLAGS="-j$(nproc)"/' /etc/makepkg.conf
+sed -i 's/ debug / !debug /' /etc/makepkg.conf
 
 #Time zone
 ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
