@@ -1,50 +1,89 @@
 # Arch Linux Automated Installation
 
-This repository provides a streamlined approach to installing and configuring Arch Linux. It includes an automated installation script and customizable configurations, making it a great template for creating your own automated installation process.
+Automated installation for Arch Linux with hardware detection, AUR support, and dotfiles integration.
+
+## Overview
+
+This project provides a set of bash scripts to automate the installation of Arch Linux with a preconfigured desktop environment, automatic hardware detection, and optional virtualization support.
 
 ## Features
 
-- **Automated Installation**: The `install.sh` script automatically handles system configuration, partitioning, package selection, user setup, and more, streamlining the installation process.
+- Automatic hardware detection (Intel/AMD CPU, AMD/NVIDIA GPU)
+- UEFI boot with GRUB
+- X11 desktop environment with PipeWire audio
+- AUR helper (yay) installation
+- GitHub repository integration for custom builds and dotfiles
+- Optional virtualization host support (libvirt/QEMU)
+- VM guest detection with automatic tools installation
 
-- **Customization**: Tailor the installation to your preferences by modifying the script and associated files to meet your specific requirements.
+## File Structure
 
-- **Virtualization Support**: Optional installation and configuration of libvirt allows you to explore virtualization capabilities on your Arch Linux system.
+- `install.sh` - Main configuration file and entry point
+- `arch_live.sh` - Executes in the live environment
+- `arch_chroot.sh` - Executes in the chroot environment
+- `disk.sfdisk` - Disk partitioning layout (GPT with EFI and root)
 
-- **Installation Log**: The installation process logs to the primary installation disk, allowing you to check if everything went smoothly.
+## Installation
 
-## Customization and Additional Steps
+1. Boot into Arch Linux installation media
 
-- **Customizing the Installation**: Modify the `install.sh` script and associated files to suit your preferences and specific system requirements.
+2. Install git:
 
-- **GitHub Repository Integration**: Specify GitHub repositories in the `$GITHUB_REPOSITORIES` variable within the `install.sh` script. These repositories will be cloned into the `~/source` directory and built using `make` during the installation process. Ensure that the repositories exist and are public under the GitHub user specified in the `$GIT_NAME` variable.
-
-- **Dotfiles Integration**: Specify the dotfiles repository in the `$GITHUB_DOTFILES_REPOSITORY` variable within the `install.sh` script. The automated installation script will clone the repository and execute the `install.sh` file included in it, setting up your personalized configuration during the Arch Linux installation. Ensure that the repository exists and is public under the GitHub user specified in the `$GIT_NAME` variable.
-
-## Getting Started
-
-1. Boot your computer into the Arch Linux installation ISO.
-
-2. Once booted into the Arch Linux installation environment, install Git by running the following command:
-   ```shell
+   ```bash
    pacman -Sy git
    ```
 
-3. Clone this repository to your local machine by running the following command (Replace `[URL]` with the actual repository URL):
-   ```shell
-   git clone [URL]
+3. Clone this repository:
+
+   ```bash
+   git clone https://github.com/AkamQadiri/archinstall.git
+   cd archinstall
    ```
 
-4. Navigate to the cloned repository directory.
+4. Edit `install.sh` to configure:
 
-5. Customize the `install.sh` script and associated files to fit your requirements.
+   - System settings (hostname, timezone, locale)
+   - User credentials
+   - Target disk device
+   - Package selections
+   - Git repositories
 
-6. Execute the `install.sh` script by running the following command:
-   ```shell
+5. Execute the installation:
+   ```bash
    source install.sh
    ```
 
-(Optional) After installation, you can check the archinstall log located at `/var/log/archinstall.log` on the `$DEVICE` disk to ensure everything went smoothly.
+## Configuration
 
-## Troubleshooting
+### Required Settings
 
-If you encounter any issues during the installation process, refer to the Arch Linux documentation for troubleshooting.
+- `DEVICE` - Target installation disk (verify with `lsblk`)
+- `USER_NAME` - Primary user account name
+- `USER_PASSWORD` - User password (consider changing post-install)
+
+### Optional Features
+
+- Uncomment `LIBVIRT_PACKAGES` to enable virtualization host support
+- Configure `YAY_PACKAGES` for AUR packages
+- Set `GITHUB_REPOSITORIES` for custom builds (requires Makefile)
+- Set `GITHUB_DOTFILES_REPOSITORY` for dotfiles (requires install.sh)
+
+## Partition Layout
+
+| Partition | Size      | Type | Mount Point |
+| --------- | --------- | ---- | ----------- |
+| Part 1    | 512 MiB   | EFI  | /boot/efi   |
+| Part 2    | Remaining | ext4 | /           |
+
+## Hardware Support
+
+The scripts automatically detect and install drivers for:
+
+- Intel/AMD microcode
+- AMD GPU (Vulkan)
+- NVIDIA GPU (proprietary drivers)
+- VM guest additions (QEMU)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

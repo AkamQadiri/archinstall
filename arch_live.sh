@@ -1,42 +1,44 @@
-#!/bin/sh
+#!/bin/bash
+
+# Log all output to file
 exec &> >(tee -a archinstall.log)
 
-#Set the console keyboard layout
-loadkeys $KEYBOARD
+# Configure keyboard layout
+loadkeys "${KEYBOARD}"
 
-#Update the system clock
+# Sync system time via NTP
 timedatectl set-ntp true
 
-#Partition the disks
-sfdisk $DEVICE < disk.sfdisk
+# Partition disk according to layout file
+sfdisk "${DEVICE}" < disk.sfdisk
 
-#Installing keyring to avoid gpg error messages
+# Update keyring to prevent GPG errors
 pacman --noconfirm -Sy archlinux-keyring
 
-#Optimize pacman.conf
-sed -i "s/#ParallelDownloads.*/ParallelDownloads = $PARALLELDOWNLOADS/" /etc/pacman.conf
+# Configure pacman for parallel downloads
+sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
 
-#Format the partitions
-mkfs.fat -F 32 $EFI_PARTITION
-mkfs.ext4 -F $ROOT_PARTITION
+# Create filesystems
+mkfs.fat -F 32 "${EFI_PARTITION}"
+mkfs.ext4 -F "${ROOT_PARTITION}"
 
-#Mount the root partition
-mount $ROOT_PARTITION /mnt
+# Mount root partition
+mount "${ROOT_PARTITION}" /mnt
 
-#Install essential packages
+# Install base system
 pacstrap /mnt base base-devel linux linux-headers linux-firmware dkms
 
-#Fstab
+# Generate filesystem table
 genfstab -U /mnt >> /mnt/etc/fstab
 
-#Chroot
+# Copy and execute chroot script
 cp arch_chroot.sh /mnt/root/arch_chroot.sh
 arch-chroot /mnt /root/arch_chroot.sh
 
-#Move log file
+# Archive installation log
 mv archinstall.log /mnt/var/log/archinstall.log
 
-#Clean up and unmount
+# Cleanup and unmount
 rm /mnt/root/arch_chroot.sh
 umount -R /mnt
 

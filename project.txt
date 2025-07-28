@@ -1,0 +1,309 @@
+### ./install.sh
+#!/bin/bash
+
+# Arch Linux installation configuration
+# Run with: source install.sh
+
+# === SYSTEM CONFIGURATION ===
+export HOSTNAME="archtop"
+export LANGUAGE="en_US.UTF-8"
+export KEYBOARD="no"
+export TIMEZONE="Europe/Oslo"
+export PARALLELDOWNLOADS="15"
+
+# === STORAGE CONFIGURATION ===
+# Run 'lsblk' to identify your drive
+# NVMe drives use p1, p2 format; SATA/SAS use 1, 2 format
+export DEVICE="/dev/nvme0n1"
+export EFI_PARTITION="${DEVICE}p1"
+export ROOT_PARTITION="${DEVICE}p2"
+
+# === USER CONFIGURATION ===
+export USER_NAME="akam"
+export USER_PASSWORD="secret"
+export USER_GROUPS="wheel,uucp"
+
+# === HARDWARE DETECTION ===
+# Detect Intel CPU and add microcode
+if grep -q "GenuineIntel" /proc/cpuinfo; then
+    export INTEL_DRIVER_PACKAGES="intel-ucode"
+fi
+
+# Detect AMD CPU for microcode
+if grep -q "AuthenticAMD" /proc/cpuinfo; then
+    export AMD_CPU_PACKAGES="amd-ucode"
+fi
+
+# Detect AMD GPU for Vulkan driver
+if lspci | grep -E "VGA|3D" | grep -qi "AMD\|ATI"; then
+    export AMD_GPU_PACKAGES="vulkan-radeon"
+fi
+
+# Combine AMD packages
+if [[ -n "${AMD_CPU_PACKAGES}" || -n "${AMD_GPU_PACKAGES}" ]]; then
+    export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
+fi
+
+# Detect NVIDIA GPU
+if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
+    export NVIDIA_DRIVER_PACKAGES="nvidia nvidia-utils"
+fi
+
+# === PACKAGE DEFINITIONS ===
+# X11 and desktop environment components
+export X_PACKAGES="gnome-keyring lxsession-gtk3 numlockx perl-file-mimeinfo picom rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
+
+# Graphics drivers (combines detected hardware packages)
+export DRIVER_PACKAGES="libva-mesa-driver libva-vdpau-driver mesa mesa-utils mesa-vdpau vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}" 
+
+# Audio stack (PipeWire)
+export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
+
+# Font packages for proper text rendering
+export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
+
+# Essential utilities
+export ADDITIONAL_PACKAGES="feh firefox git git-lfs htop jq mpv playerctl unzip vim zip"
+
+# Virtual machine guest additions (auto-detected)
+if systemd-detect-virt -q; then
+    export ADDITIONAL_PACKAGES="${ADDITIONAL_PACKAGES} qemu-guest-agent"
+fi
+
+# Optional: Virtualization host packages (uncomment to enable)
+#export LIBVIRT_PACKAGES="bridge-utils dmidecode dnsmasq libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
+
+# === AUR CONFIGURATION ===
+# Dependencies for AUR packages (specify which package needs what)
+# Example: iperf3, sysbench → hardinfo2; libheif → czkawka-gui-bin
+export AUR_DEPENDENCIES=""
+
+# AUR packages to install (requires git)
+export YAY_PACKAGES=""
+
+# === SERVICE CONFIGURATION ===
+# User services to enable globally
+export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"
+
+# === GIT CONFIGURATION ===
+export GIT_EMAIL="akamq@hotmail.com"
+export GIT_NAME="AkamQadiri"
+export GITHUB_REPOSITORIES="hyperx-cloud-flight"  # Requires MAKEFILE in each repo
+export GITHUB_DOTFILES_REPOSITORY="dotfiles"      # Must contain install.sh
+
+# Execute installation
+./arch_live.sh
+
+### ./arch_live.sh
+#!/bin/bash
+
+# Log all output to file
+exec &> >(tee -a archinstall.log)
+
+# Configure keyboard layout
+loadkeys "${KEYBOARD}"
+
+# Sync system time via NTP
+timedatectl set-ntp true
+
+# Partition disk according to layout file
+sfdisk "${DEVICE}" < disk.sfdisk
+
+# Update keyring to prevent GPG errors
+pacman --noconfirm -Sy archlinux-keyring
+
+# Configure pacman for parallel downloads
+sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
+
+# Create filesystems
+mkfs.fat -F 32 "${EFI_PARTITION}"
+mkfs.ext4 -F "${ROOT_PARTITION}"
+
+# Mount root partition
+mount "${ROOT_PARTITION}" /mnt
+
+# Install base system
+pacstrap /mnt base base-devel linux linux-headers linux-firmware dkms
+
+# Generate filesystem table
+genfstab -U /mnt >> /mnt/etc/fstab
+
+# Copy and execute chroot script
+cp arch_chroot.sh /mnt/root/arch_chroot.sh
+arch-chroot /mnt /root/arch_chroot.sh
+
+# Archive installation log
+mv archinstall.log /mnt/var/log/archinstall.log
+
+# Cleanup and unmount
+rm /mnt/root/arch_chroot.sh
+umount -R /mnt
+
+echo "Arch Linux installed successfully! You may reboot now."
+
+### ./arch_chroot.sh
+#!/bin/bash
+
+# Configure pacman for parallel downloads
+sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
+
+# Optimize compilation flags for native CPU
+sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
+sed -i "s/#MAKEFLAGS=.*/MAKEFLAGS=\"-j\$(nproc)\"/" /etc/makepkg.conf
+sed -i 's/ debug / !debug /' /etc/makepkg.conf
+
+# Configure timezone
+ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
+hwclock --systohc
+
+# Configure locale
+sed -i "/${LANGUAGE}/s/^#//" /etc/locale.gen
+locale-gen
+echo "LANG=${LANGUAGE}" >> /etc/locale.conf
+echo "KEYMAP=${KEYBOARD}" >> /etc/vconsole.conf
+
+# Configure network
+{
+    echo "${HOSTNAME}"
+} > /etc/hostname
+
+{
+    echo "127.0.0.1      localhost"
+    echo "::1            localhost"
+    echo "127.0.0.1      ${HOSTNAME}.localdomain ${HOSTNAME}"
+} > /etc/hosts
+
+# Create user account
+useradd -m "${USER_NAME}"
+echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
+
+# Install system packages
+# shellcheck disable=SC2086  # We need word splitting for package lists
+pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_PACKAGES} ${ADDITIONAL_PACKAGES} grub efibootmgr networkmanager
+
+# Configure user groups
+usermod -aG "${USER_GROUPS}" "${USER_NAME}"
+
+# Configure sudo access
+echo '%wheel ALL=(ALL:ALL) ALL' | EDITOR='tee -a' visudo -f /etc/sudoers.d/default
+echo 'ALL ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown' | EDITOR='tee -a' visudo -f /etc/sudoers.d/default
+
+# Temporary passwordless sudo for setup
+echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo -f /etc/sudoers.d/temp
+
+# Install GRUB bootloader
+mount --mkdir "${EFI_PARTITION}" /boot/efi
+grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Enable system services
+systemctl enable NetworkManager
+# shellcheck disable=SC2086  # We need word splitting for service lists
+systemctl --global enable ${SYSTEMCTL_GLOBAL_SERVICES}
+
+# Configure virtualization (if enabled)
+if [[ -n "${LIBVIRT_PACKAGES}" ]]; then
+    # shellcheck disable=SC2086  # We need word splitting for package lists
+    pacman --noconfirm -S ${LIBVIRT_PACKAGES}
+    
+    # Configure libvirt permissions
+    sed -i '/#unix_sock_group/s/^#//' /etc/libvirt/libvirtd.conf
+    sed -i '/#unix_sock_ro_perms/s/^#//' /etc/libvirt/libvirtd.conf
+    sed -i '/#unix_sock_rw_perms/s/^#//' /etc/libvirt/libvirtd.conf
+    sed -i 's/#auth_unix_ro.*/auth_unix_ro = "none"/' /etc/libvirt/libvirtd.conf
+    sed -i 's/#auth_unix_rw.*/auth_unix_rw = "none"/' /etc/libvirt/libvirtd.conf
+    
+    systemctl enable libvirtd
+    usermod -aG libvirt "${USER_NAME}"
+fi
+
+# Configure development environment (if git installed)
+if command -v git &> /dev/null; then
+    # Configure git credentials
+    su "${USER_NAME}" -c "git config --global credential.helper /usr/lib/git-core/git-credential-libsecret"
+    
+    # Enable Git LFS if available
+    if command -v git-lfs &> /dev/null; then
+        su "${USER_NAME}" -c "git lfs install"
+    fi
+    
+    # Set git identity
+    if [[ -n "${GIT_EMAIL}" ]]; then
+        su "${USER_NAME}" -c "git config --global user.email '${GIT_EMAIL}'"
+    fi
+    
+    if [[ -n "${GIT_NAME}" ]]; then
+        su "${USER_NAME}" -c "git config --global user.name '${GIT_NAME}'"
+    fi
+    
+    # Install AUR helper and packages
+    if [[ -n "${YAY_PACKAGES}" ]]; then
+        # Build and install yay
+        su "${USER_NAME}" -c "cd ~; git clone https://aur.archlinux.org/yay-bin.git; cd yay-bin; makepkg -s"
+        
+        cd "/home/${USER_NAME}/yay-bin" || exit 1
+        pacman --noconfirm -U ./*.pkg.tar.zst
+        
+        rm -r "/home/${USER_NAME}/yay-bin"
+        
+        # Install dependencies first
+        if [[ -n "${AUR_DEPENDENCIES}" ]]; then
+            # shellcheck disable=SC2086  # We need word splitting for package lists
+            pacman --noconfirm -S ${AUR_DEPENDENCIES}
+        fi
+        
+        # Install AUR packages
+        su "${USER_NAME}" -c "yay -S ${YAY_PACKAGES} --removemake --answerclean All --answerdiff None --noconfirm"
+    fi
+    
+    # Clone and build GitHub repositories
+    su "${USER_NAME}" -c "cd ~; mkdir -p source"
+    
+    if [[ -n "${GITHUB_REPOSITORIES}" ]]; then
+        IFS=' ' read -ra repositories <<< "${GITHUB_REPOSITORIES}"
+        for repo in "${repositories[@]}"; do
+            su "${USER_NAME}" -c "cd ~/source; git clone https://github.com/${GIT_NAME}/${repo}; cd ${repo}; sudo make clean install; sudo make clean;"
+        done
+    fi
+    
+    # Install dotfiles
+    if [[ -n "${GITHUB_DOTFILES_REPOSITORY}" ]]; then
+        su "${USER_NAME}" -c "cd ~/source; git clone https://github.com/${GIT_NAME}/${GITHUB_DOTFILES_REPOSITORY}; cd ${GITHUB_DOTFILES_REPOSITORY}; ./install.sh"
+    fi
+fi
+
+# Remove temporary sudo permissions
+rm /etc/sudoers.d/temp
+
+### ./LICENSE
+MIT License
+
+Copyright (c) 2023 Akam Qadiri
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+### ./disk.sfdisk
+label: gpt
+unit: sectors
+
+1 : size=     512MiB, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B
+2 : type=0FC63DAF-8483-4772-8E79-3D69D8477DE4
+
