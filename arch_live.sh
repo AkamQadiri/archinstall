@@ -9,6 +9,7 @@ loadkeys "${KEYBOARD}"
 # Sync system time via NTP
 timedatectl set-ntp true
 
+# WARNING: This will destroy all data on ${DEVICE}
 # Partition disk according to layout file
 sfdisk "${DEVICE}" < disk.sfdisk
 

@@ -23,9 +23,14 @@ export USER_PASSWORD="secret"
 export USER_GROUPS="wheel,uucp"
 
 # === HARDWARE DETECTION ===
-# Detect Intel CPU and add microcode
+# Detect Intel CPU for microcode
 if grep -q "GenuineIntel" /proc/cpuinfo; then
-    export INTEL_DRIVER_PACKAGES="intel-ucode"
+    export INTEL_CPU_PACKAGES="intel-ucode"
+fi
+
+# Detect Intel GPU for VA-API and Vulkan driver
+if lspci | grep -E "VGA|3D" | grep -qi "Intel"; then
+    export INTEL_GPU_PACKAGES="intel-media-driver vulkan-intel"
 fi
 
 # Detect AMD CPU for microcode
@@ -33,14 +38,9 @@ if grep -q "AuthenticAMD" /proc/cpuinfo; then
     export AMD_CPU_PACKAGES="amd-ucode"
 fi
 
-# Detect AMD GPU for Vulkan driver
+# Detect AMD GPU for VDPAU and Vulkan driver
 if lspci | grep -E "VGA|3D" | grep -qi "AMD\|ATI"; then
-    export AMD_GPU_PACKAGES="vulkan-radeon"
-fi
-
-# Combine AMD packages
-if [[ -n "${AMD_CPU_PACKAGES}" || -n "${AMD_GPU_PACKAGES}" ]]; then
-    export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
+    export AMD_GPU_PACKAGES="mesa-vdpau vulkan-radeon"
 fi
 
 # Detect NVIDIA GPU
@@ -48,12 +48,16 @@ if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
     export NVIDIA_DRIVER_PACKAGES="nvidia nvidia-utils"
 fi
 
+# Combine Driver packages
+export INTEL_DRIVER_PACKAGES="${INTEL_CPU_PACKAGES} ${INTEL_GPU_PACKAGES}"
+export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
+
 # === PACKAGE DEFINITIONS ===
 # X11 and desktop environment components
 export X_PACKAGES="gnome-keyring lxsession-gtk3 numlockx perl-file-mimeinfo picom rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
 
 # Graphics drivers (combines detected hardware packages)
-export DRIVER_PACKAGES="libva-mesa-driver libva-vdpau-driver mesa mesa-utils mesa-vdpau vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}" 
+export DRIVER_PACKAGES="libva-mesa-driver mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}" 
 
 # Audio stack (PipeWire)
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
@@ -62,7 +66,7 @@ export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
 
 # Essential utilities
-export ADDITIONAL_PACKAGES="feh firefox git git-lfs htop jq mpv playerctl unzip vim zip"
+export ADDITIONAL_PACKAGES="feh firefox git git-lfs htop jq mpv neovim playerctl unzip zip"
 
 # Virtual machine guest additions (auto-detected)
 if systemd-detect-virt -q; then
