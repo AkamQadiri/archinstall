@@ -80,6 +80,7 @@ This project provides a set of bash scripts to automate the installation of Arch
 The scripts automatically detect and install drivers for:
 
 - Intel/AMD microcode
+- Intel GPU (VA-API and Vulkan)
 - AMD GPU (Vulkan)
 - NVIDIA GPU (proprietary drivers)
 - VM guest additions (QEMU)
