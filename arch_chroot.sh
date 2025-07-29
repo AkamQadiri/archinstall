@@ -51,7 +51,6 @@ echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo -f /etc/sudoe
 mount --mkdir "${EFI_PARTITION}" /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enable system services
 systemctl enable NetworkManager
@@ -72,7 +71,21 @@ if [[ -n "${LIBVIRT_PACKAGES}" ]]; then
     
     systemctl enable libvirtd
     usermod -aG libvirt "${USER_NAME}"
+
+    if ! systemd-detect-virt -q; then
+        # Add IOMMU support to kernel parameters
+        sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 iommu=pt"/' /etc/default/grub
+        
+        # Add VFIO modules to mkinitcpio
+        sed -i 's/^MODULES=(\(.*\))/MODULES=(\1 vfio_pci vfio vfio_iommu_type1)/' /etc/mkinitcpio.conf
+        
+        # Regenerate initramfs with new modules
+        mkinitcpio -P
+    fi
 fi
+
+# Gnerate GRUB config
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # Configure development environment (if git installed)
 if command -v git &> /dev/null; then

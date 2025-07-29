@@ -64,6 +64,7 @@ This project provides a set of bash scripts to automate the installation of Arch
 ### Optional Features
 
 - Uncomment `LIBVIRT_PACKAGES` to enable virtualization host support
+  - Automatically configures IOMMU and VFIO modules for PCI passthrough on bare metal systems
 - Configure `YAY_PACKAGES` for AUR packages
 - Set `GITHUB_REPOSITORIES` for custom builds (requires Makefile)
 - Set `GITHUB_DOTFILES_REPOSITORY` for dotfiles (requires install.sh)
