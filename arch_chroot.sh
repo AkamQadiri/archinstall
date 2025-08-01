@@ -15,19 +15,19 @@ hwclock --systohc
 # Configure locale
 sed -i "/${LANGUAGE}/s/^#//" /etc/locale.gen
 locale-gen
-echo "LANG=${LANGUAGE}" >> /etc/locale.conf
-echo "KEYMAP=${KEYBOARD}" >> /etc/vconsole.conf
+echo "LANG=${LANGUAGE}" >>/etc/locale.conf
+echo "KEYMAP=${KEYBOARD}" >>/etc/vconsole.conf
 
 # Configure network
 {
     echo "${HOSTNAME}"
-} > /etc/hostname
+} >/etc/hostname
 
 {
     echo "127.0.0.1      localhost"
     echo "::1            localhost"
     echo "127.0.0.1      ${HOSTNAME}.localdomain ${HOSTNAME}"
-} > /etc/hosts
+} >/etc/hosts
 
 # Create user account
 useradd -m "${USER_NAME}"
@@ -61,24 +61,24 @@ systemctl --global enable ${SYSTEMCTL_GLOBAL_SERVICES}
 if [[ -n "${LIBVIRT_PACKAGES}" ]]; then
     # shellcheck disable=SC2086  # We need word splitting for package lists
     pacman --noconfirm -S ${LIBVIRT_PACKAGES}
-    
+
     # Configure libvirt permissions
     sed -i '/#unix_sock_group/s/^#//' /etc/libvirt/libvirtd.conf
     sed -i '/#unix_sock_ro_perms/s/^#//' /etc/libvirt/libvirtd.conf
     sed -i '/#unix_sock_rw_perms/s/^#//' /etc/libvirt/libvirtd.conf
     sed -i 's/#auth_unix_ro.*/auth_unix_ro = "none"/' /etc/libvirt/libvirtd.conf
     sed -i 's/#auth_unix_rw.*/auth_unix_rw = "none"/' /etc/libvirt/libvirtd.conf
-    
+
     systemctl enable libvirtd
     usermod -aG libvirt "${USER_NAME}"
 
     if ! systemd-detect-virt -q; then
         # Add IOMMU support to kernel parameters
         sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 iommu=pt"/' /etc/default/grub
-        
+
         # Add VFIO modules to mkinitcpio
         sed -i 's/^MODULES=(\(.*\))/MODULES=(\1 vfio_pci vfio vfio_iommu_type1)/' /etc/mkinitcpio.conf
-        
+
         # Regenerate initramfs with new modules
         mkinitcpio -P
     fi
@@ -88,54 +88,54 @@ fi
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Configure development environment (if git installed)
-if command -v git &> /dev/null; then
+if command -v git &>/dev/null; then
     # Configure git credentials
     su "${USER_NAME}" -c "git config --global credential.helper /usr/lib/git-core/git-credential-libsecret"
-    
+
     # Enable Git LFS if available
-    if command -v git-lfs &> /dev/null; then
+    if command -v git-lfs &>/dev/null; then
         su "${USER_NAME}" -c "git lfs install"
     fi
-    
+
     # Set git identity
     if [[ -n "${GIT_EMAIL}" ]]; then
         su "${USER_NAME}" -c "git config --global user.email '${GIT_EMAIL}'"
     fi
-    
+
     if [[ -n "${GIT_NAME}" ]]; then
         su "${USER_NAME}" -c "git config --global user.name '${GIT_NAME}'"
     fi
-    
+
     # Install AUR helper and packages
-    if [[ -n "${YAY_PACKAGES}" ]]; then
+    if [[ -n "${AUR_PACKAGES}" ]]; then
         # Build and install yay
         su "${USER_NAME}" -c "cd ~; git clone https://aur.archlinux.org/yay-bin.git; cd yay-bin; makepkg -s"
-        
+
         cd "/home/${USER_NAME}/yay-bin" || exit 1
         pacman --noconfirm -U ./*.pkg.tar.zst
-        
+
         rm -r "/home/${USER_NAME}/yay-bin"
-        
+
         # Install dependencies first
         if [[ -n "${AUR_DEPENDENCIES}" ]]; then
             # shellcheck disable=SC2086  # We need word splitting for package lists
             pacman --noconfirm -S ${AUR_DEPENDENCIES}
         fi
-        
+
         # Install AUR packages
-        su "${USER_NAME}" -c "yay -S ${YAY_PACKAGES} --removemake --answerclean All --answerdiff None --noconfirm"
+        su "${USER_NAME}" -c "yay -S ${AUR_PACKAGES} --removemake --answerclean All --answerdiff None --noconfirm"
     fi
-    
+
     # Clone and build GitHub repositories
     su "${USER_NAME}" -c "cd ~; mkdir -p source"
-    
+
     if [[ -n "${GITHUB_REPOSITORIES}" ]]; then
-        IFS=' ' read -ra repositories <<< "${GITHUB_REPOSITORIES}"
+        IFS=' ' read -ra repositories <<<"${GITHUB_REPOSITORIES}"
         for repo in "${repositories[@]}"; do
             su "${USER_NAME}" -c "cd ~/source; git clone https://github.com/${GIT_NAME}/${repo}; cd ${repo}; sudo make clean install; sudo make clean;"
         done
     fi
-    
+
     # Install dotfiles
     if [[ -n "${GITHUB_DOTFILES_REPOSITORY}" ]]; then
         su "${USER_NAME}" -c "cd ~/source; git clone https://github.com/${GIT_NAME}/${GITHUB_DOTFILES_REPOSITORY}; cd ${GITHUB_DOTFILES_REPOSITORY}; ./install.sh"

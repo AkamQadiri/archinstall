@@ -54,10 +54,10 @@ export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
 
 # === PACKAGE DEFINITIONS ===
 # X11 and desktop environment components
-export X_PACKAGES="gnome-keyring lxsession-gtk3 numlockx perl-file-mimeinfo picom rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
+export X_PACKAGES="dunst gnome-keyring i3blocks i3-wm lxsession-gtk3 numlockx perl-file-mimeinfo picom rofi rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
 
 # Graphics drivers (combines detected hardware packages)
-export DRIVER_PACKAGES="libva-mesa-driver mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}" 
+export DRIVER_PACKAGES="libva-mesa-driver mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}"
 
 # Audio stack (PipeWire)
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
@@ -66,7 +66,7 @@ export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
 
 # Essential utilities
-export ADDITIONAL_PACKAGES="feh firefox git git-lfs htop jq mpv neovim playerctl unzip zip"
+export ADDITIONAL_PACKAGES="fd feh firefox flameshot ghostty git git-lfs htop jq mpv neovim playerctl ripgrep unzip zip"
 
 # Virtual machine guest additions (auto-detected)
 if systemd-detect-virt -q; then
@@ -82,7 +82,7 @@ fi
 export AUR_DEPENDENCIES=""
 
 # AUR packages to install (requires git)
-export YAY_PACKAGES=""
+export AUR_PACKAGES="ttf-font-awesome-5"
 
 # === SERVICE CONFIGURATION ===
 # User services to enable globally
@@ -91,8 +91,8 @@ export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wirepl
 # === GIT CONFIGURATION ===
 export GIT_EMAIL="akamq@hotmail.com"
 export GIT_NAME="AkamQadiri"
-export GITHUB_REPOSITORIES="hyperx-cloud-flight"  # Requires MAKEFILE in each repo
-export GITHUB_DOTFILES_REPOSITORY="dotfiles"      # Must contain install.sh
+export GITHUB_REPOSITORIES="hyperx-cloud-flight" # Requires MAKEFILE in each repo
+export GITHUB_DOTFILES_REPOSITORY="dotfiles"     # Must contain install.sh
 
 # Execute installation
 ./arch_live.sh
