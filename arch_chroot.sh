@@ -1,27 +1,29 @@
 #!/bin/bash
+set -euo pipefail
 
-# Configure pacman for parallel downloads
+# Arch Linux chroot environment configuration script
+# Configures system settings, users, packages, and bootloader
+
+# === PACMAN CONFIGURATION ===
 sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
 
-# Optimize compilation flags for native CPU
+# === MAKEPKG OPTIMIZATION ===
 sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf
 sed -i "s/#MAKEFLAGS=.*/MAKEFLAGS=\"-j\$(nproc)\"/" /etc/makepkg.conf
 sed -i 's/ debug / !debug /' /etc/makepkg.conf
 
-# Configure timezone
+# === TIMEZONE CONFIGURATION ===
 ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
 hwclock --systohc
 
-# Configure locale
+# === LOCALE CONFIGURATION ===
 sed -i "/${LANGUAGE}/s/^#//" /etc/locale.gen
 locale-gen
-echo "LANG=${LANGUAGE}" >>/etc/locale.conf
-echo "KEYMAP=${KEYBOARD}" >>/etc/vconsole.conf
+echo "LANG=${LANGUAGE}" >/etc/locale.conf
+echo "KEYMAP=${KEYBOARD}" >/etc/vconsole.conf
 
-# Configure network
-{
-    echo "${HOSTNAME}"
-} >/etc/hostname
+# === NETWORK CONFIGURATION ===
+echo "${HOSTNAME}" >/etc/hostname
 
 {
     echo "127.0.0.1      localhost"
@@ -29,118 +31,142 @@ echo "KEYMAP=${KEYBOARD}" >>/etc/vconsole.conf
     echo "127.0.0.1      ${HOSTNAME}.localdomain ${HOSTNAME}"
 } >/etc/hosts
 
-# Create user account
+# === USER CREATION ===
 useradd -m "${USER_NAME}"
 echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
 
-# Install system packages
+# === PACKAGE INSTALLATION ===
 # shellcheck disable=SC2086  # We need word splitting for package lists
 pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_PACKAGES} ${ADDITIONAL_PACKAGES} grub efibootmgr networkmanager
 
-# Configure user groups
+# === USER GROUP CONFIGURATION ===
 usermod -aG "${USER_GROUPS}" "${USER_NAME}"
 
-# Configure sudo access
-echo '%wheel ALL=(ALL:ALL) ALL' | EDITOR='tee -a' visudo -f /etc/sudoers.d/default
-echo 'ALL ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown' | EDITOR='tee -a' visudo -f /etc/sudoers.d/default
+# === SUDO CONFIGURATION ===
+{
+    echo '%wheel ALL=(ALL:ALL) ALL'
+    echo 'ALL ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown'
+} >/etc/sudoers.d/default
 
 # Temporary passwordless sudo for setup
-echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo -f /etc/sudoers.d/temp
+echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' >/etc/sudoers.d/temp
 
-# Install GRUB bootloader
+# === BOOTLOADER INSTALLATION ===
 mount --mkdir "${EFI_PARTITION}" /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
 
-# Enable system services
+# === SERVICE CONFIGURATION ===
 systemctl enable NetworkManager
 # shellcheck disable=SC2086  # We need word splitting for service lists
 systemctl --global enable ${SYSTEMCTL_GLOBAL_SERVICES}
 
-# Configure virtualization (if enabled)
-if [[ -n "${LIBVIRT_PACKAGES}" ]]; then
+# === VIRTUALIZATION CONFIGURATION ===
+configure_virtualization() {
     # shellcheck disable=SC2086  # We need word splitting for package lists
     pacman --noconfirm -S ${LIBVIRT_PACKAGES}
 
     # Configure libvirt permissions
-    sed -i '/#unix_sock_group/s/^#//' /etc/libvirt/libvirtd.conf
-    sed -i '/#unix_sock_ro_perms/s/^#//' /etc/libvirt/libvirtd.conf
-    sed -i '/#unix_sock_rw_perms/s/^#//' /etc/libvirt/libvirtd.conf
-    sed -i 's/#auth_unix_ro.*/auth_unix_ro = "none"/' /etc/libvirt/libvirtd.conf
-    sed -i 's/#auth_unix_rw.*/auth_unix_rw = "none"/' /etc/libvirt/libvirtd.conf
+    sed -i -e '/#unix_sock_group/s/^#//' \
+        -e '/#unix_sock_ro_perms/s/^#//' \
+        -e '/#unix_sock_rw_perms/s/^#//' \
+        -e 's/#auth_unix_ro.*/auth_unix_ro = "none"/' \
+        -e 's/#auth_unix_rw.*/auth_unix_rw = "none"/' \
+        /etc/libvirt/libvirtd.conf
 
     systemctl enable libvirtd
     usermod -aG libvirt "${USER_NAME}"
 
+    # Configure IOMMU for bare metal
     if ! systemd-detect-virt -q; then
-        # Add IOMMU support to kernel parameters
         sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 iommu=pt"/' /etc/default/grub
-
-        # Add VFIO modules to mkinitcpio
         sed -i 's/^MODULES=(\(.*\))/MODULES=(\1 vfio_pci vfio vfio_iommu_type1)/' /etc/mkinitcpio.conf
-
-        # Regenerate initramfs with new modules
         mkinitcpio -P
     fi
-fi
+}
 
-# Gnerate GRUB config
+[[ -n "${LIBVIRT_PACKAGES:-}" ]] && configure_virtualization
+
+# === GRUB CONFIGURATION ===
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Configure development environment (if git installed)
-if command -v git &>/dev/null; then
-    # Configure git credentials
+# === DEVELOPMENT ENVIRONMENT ===
+configure_development() {
+    # Git configuration
     su "${USER_NAME}" -c "git config --global credential.helper /usr/lib/git-core/git-credential-libsecret"
 
-    # Enable Git LFS if available
+    # Git LFS
     if command -v git-lfs &>/dev/null; then
         su "${USER_NAME}" -c "git lfs install"
     fi
 
-    # Set git identity
-    if [[ -n "${GIT_EMAIL}" ]]; then
-        su "${USER_NAME}" -c "git config --global user.email '${GIT_EMAIL}'"
+    # Git identity
+    [[ -n "${GIT_EMAIL:-}" ]] && su "${USER_NAME}" -c "git config --global user.email '${GIT_EMAIL}'"
+    [[ -n "${GIT_NAME:-}" ]] && su "${USER_NAME}" -c "git config --global user.name '${GIT_NAME}'"
+
+    # AUR helper installation
+    if [[ -n "${AUR_PACKAGES:-}" ]]; then
+        install_aur_helper
+        install_aur_packages
     fi
 
-    if [[ -n "${GIT_NAME}" ]]; then
-        su "${USER_NAME}" -c "git config --global user.name '${GIT_NAME}'"
+    # GitHub repositories
+    if [[ -n "${GITHUB_REPOSITORIES:-}" ]]; then
+        clone_and_build_repositories
     fi
 
-    # Install AUR helper and packages
-    if [[ -n "${AUR_PACKAGES}" ]]; then
-        # Build and install yay
-        su "${USER_NAME}" -c "cd ~; git clone https://aur.archlinux.org/yay-bin.git; cd yay-bin; makepkg -s"
+    # Dotfiles installation
+    if [[ -n "${GITHUB_DOTFILES_REPOSITORY:-}" ]]; then
+        install_dotfiles
+    fi
+}
 
-        cd "/home/${USER_NAME}/yay-bin" || exit 1
-        pacman --noconfirm -U ./*.pkg.tar.zst
+install_aur_helper() {
+    local build_dir="/home/${USER_NAME}/yay-bin"
 
-        rm -r "/home/${USER_NAME}/yay-bin"
+    su "${USER_NAME}" -c "git clone https://aur.archlinux.org/yay-bin.git '${build_dir}'"
+    su "${USER_NAME}" -c "cd '${build_dir}' && makepkg -s"
 
-        # Install dependencies first
-        if [[ -n "${AUR_DEPENDENCIES}" ]]; then
-            # shellcheck disable=SC2086  # We need word splitting for package lists
-            pacman --noconfirm -S ${AUR_DEPENDENCIES}
-        fi
+    pacman --noconfirm -U "${build_dir}"/*.pkg.tar.zst
+    rm -rf "${build_dir}"
+}
 
-        # Install AUR packages
-        su "${USER_NAME}" -c "yay -S ${AUR_PACKAGES} --removemake --answerclean All --answerdiff None --noconfirm"
+install_aur_packages() {
+    # Install dependencies if specified
+    if [[ -n "${AUR_DEPENDENCIES:-}" ]]; then
+        # shellcheck disable=SC2086  # We need word splitting
+        pacman --noconfirm -S ${AUR_DEPENDENCIES}
     fi
 
-    # Clone and build GitHub repositories
-    su "${USER_NAME}" -c "cd ~; mkdir -p source"
+    # Install AUR packages
+    su "${USER_NAME}" -c "yay -S ${AUR_PACKAGES} --removemake --answerclean All --answerdiff None --noconfirm"
+}
 
-    if [[ -n "${GITHUB_REPOSITORIES}" ]]; then
-        IFS=' ' read -ra repositories <<<"${GITHUB_REPOSITORIES}"
-        for repo in "${repositories[@]}"; do
-            su "${USER_NAME}" -c "cd ~/source; git clone https://github.com/${GIT_NAME}/${repo}; cd ${repo}; sudo make clean install; sudo make clean;"
-        done
-    fi
+clone_and_build_repositories() {
+    su "${USER_NAME}" -c "mkdir -p ~/source"
 
-    # Install dotfiles
-    if [[ -n "${GITHUB_DOTFILES_REPOSITORY}" ]]; then
-        su "${USER_NAME}" -c "cd ~/source; git clone https://github.com/${GIT_NAME}/${GITHUB_DOTFILES_REPOSITORY}; cd ${GITHUB_DOTFILES_REPOSITORY}; ./install.sh"
-    fi
-fi
+    IFS=' ' read -ra repositories <<<"${GITHUB_REPOSITORIES}"
+    for repo in "${repositories[@]}"; do
+        su "${USER_NAME}" -c "
+            cd ~/source
+            git clone 'https://github.com/${GIT_NAME}/${repo}'
+            cd '${repo}'
+            sudo make clean install
+            sudo make clean
+        "
+    done
+}
 
-# Remove temporary sudo permissions
-rm /etc/sudoers.d/temp
+install_dotfiles() {
+    su "${USER_NAME}" -c "
+        cd ~/source
+        git clone 'https://github.com/${GIT_NAME}/${GITHUB_DOTFILES_REPOSITORY}'
+        cd '${GITHUB_DOTFILES_REPOSITORY}'
+        ./install.sh
+    "
+}
+
+command -v git &>/dev/null && configure_development
+
+# === CLEANUP ===
+rm -f /etc/sudoers.d/temp

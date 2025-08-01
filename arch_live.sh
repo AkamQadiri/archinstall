@@ -1,45 +1,51 @@
 #!/bin/bash
+set -euo pipefail
 
-# Log all output to file
+# Arch Linux live environment installation script
+# Executes partitioning, filesystem creation, and base system installation
+
+# === LOGGING SETUP ===
 exec &> >(tee -a archinstall.log)
 
-# Configure keyboard layout
+# === KEYBOARD CONFIGURATION ===
 loadkeys "${KEYBOARD}"
 
-# Sync system time via NTP
+# === TIME SYNCHRONIZATION ===
 timedatectl set-ntp true
 
+# === DISK PARTITIONING ===
 # WARNING: This will destroy all data on ${DEVICE}
-# Partition disk according to layout file
-sfdisk "${DEVICE}" < disk.sfdisk
+echo "Partitioning disk ${DEVICE}..."
+sfdisk "${DEVICE}" <disk.sfdisk
 
+# === KEYRING UPDATE ===
 # Update keyring to prevent GPG errors
 pacman --noconfirm -Sy archlinux-keyring
 
-# Configure pacman for parallel downloads
+# === PACMAN CONFIGURATION ===
 sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
 
-# Create filesystems
+# === FILESYSTEM CREATION ===
+echo "Creating filesystems..."
 mkfs.fat -F 32 "${EFI_PARTITION}"
 mkfs.ext4 -F "${ROOT_PARTITION}"
 
-# Mount root partition
+# === MOUNT FILESYSTEM ===
 mount "${ROOT_PARTITION}" /mnt
 
-# Install base system
+# === BASE SYSTEM INSTALLATION ===
+echo "Installing base system..."
 pacstrap /mnt base base-devel linux linux-headers linux-firmware dkms
 
-# Generate filesystem table
-genfstab -U /mnt >> /mnt/etc/fstab
+# === FILESYSTEM TABLE ===
+genfstab -U /mnt >>/mnt/etc/fstab
 
-# Copy and execute chroot script
+# === CHROOT EXECUTION ===
 cp arch_chroot.sh /mnt/root/arch_chroot.sh
 arch-chroot /mnt /root/arch_chroot.sh
 
-# Archive installation log
+# === CLEANUP ===
 mv archinstall.log /mnt/var/log/archinstall.log
-
-# Cleanup and unmount
 rm /mnt/root/arch_chroot.sh
 umount -R /mnt
 
