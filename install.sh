@@ -54,7 +54,7 @@ export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
 
 # === PACKAGE DEFINITIONS ===
 # X11 and desktop environment components
-export X_PACKAGES="dunst gnome-keyring i3blocks i3-wm lxsession-gtk3 numlockx perl-file-mimeinfo picom rofi rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
+export X_PACKAGES="dunst gnome-keyring i3blocks i3-wm libnotify lxsession-gtk3 numlockx perl-file-mimeinfo picom rofi rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
 
 # Graphics drivers (combines detected hardware packages)
 export DRIVER_PACKAGES="libva-mesa-driver mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}"
