@@ -23,8 +23,8 @@ export USER_PASSWORD="secret"
 export USER_GROUPS="wheel,uucp"
 
 # === HARDWARE DETECTION ===
-# Detect Intel CPU for microcode
-if grep -q "GenuineIntel" /proc/cpuinfo; then
+# Detect Intel CPU for microcode (skip in VMs)
+if grep -q "GenuineIntel" /proc/cpuinfo && ! systemd-detect-virt -q; then
     export INTEL_CPU_PACKAGES="intel-ucode"
 fi
 
@@ -33,8 +33,8 @@ if lspci | grep -E "VGA|3D" | grep -qi "Intel"; then
     export INTEL_GPU_PACKAGES="intel-media-driver vulkan-intel"
 fi
 
-# Detect AMD CPU for microcode
-if grep -q "AuthenticAMD" /proc/cpuinfo; then
+# Detect AMD CPU for microcode (skip in VMs)
+if grep -q "AuthenticAMD" /proc/cpuinfo && ! systemd-detect-virt -q; then
     export AMD_CPU_PACKAGES="amd-ucode"
 fi
 
