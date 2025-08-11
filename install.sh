@@ -12,7 +12,6 @@ export PARALLELDOWNLOADS="15"
 
 # === STORAGE CONFIGURATION ===
 # Run 'lsblk' to identify your drive
-# NVMe drives use p1, p2 format; SATA/SAS use 1, 2 format
 export DEVICE="/dev/nvme0n1"
 
 # Detect partition naming scheme based on device type
@@ -73,7 +72,7 @@ export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
 
 # Essential utilities
-export ADDITIONAL_PACKAGES="fd feh firefox flameshot ghostty git git-lfs htop jq mpv neovim npm playerctl ripgrep unzip zip"
+export ADDITIONAL_PACKAGES="fd feh firefox flameshot ghostty git git-lfs htop jq mpv neovim npm playerctl ripgrep rsync unzip zip"
 
 # Virtual machine guest additions (auto-detected)
 if systemd-detect-virt -q; then
