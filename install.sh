@@ -14,8 +14,15 @@ export PARALLELDOWNLOADS="15"
 # Run 'lsblk' to identify your drive
 # NVMe drives use p1, p2 format; SATA/SAS use 1, 2 format
 export DEVICE="/dev/nvme0n1"
-export EFI_PARTITION="${DEVICE}p1"
-export ROOT_PARTITION="${DEVICE}p2"
+
+# Detect partition naming scheme based on device type
+if [[ "${DEVICE}" =~ ^/dev/(nvme|mmcblk|loop) ]]; then
+    export EFI_PARTITION="${DEVICE}p1"
+    export ROOT_PARTITION="${DEVICE}p2"
+else
+    export EFI_PARTITION="${DEVICE}1"
+    export ROOT_PARTITION="${DEVICE}2"
+fi
 
 # === USER CONFIGURATION ===
 export USER_NAME="akam"
