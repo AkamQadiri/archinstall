@@ -97,8 +97,8 @@ export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wirepl
 # === GIT CONFIGURATION ===
 export GIT_EMAIL="akamq@hotmail.com"
 export GIT_NAME="AkamQadiri"
-export GITHUB_REPOSITORIES="hyperx-cloud-flight" # Requires MAKEFILE in each repo
-export GITHUB_DOTFILES_REPOSITORY="dotfiles"     # Must contain install.sh
+export GITHUB_REPOSITORIES=""                # Requires MAKEFILE in each repo
+export GITHUB_DOTFILES_REPOSITORY="dotfiles" # Must contain install.sh
 
 # Execute installation
 ./arch_live.sh
