@@ -92,6 +92,9 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 # === DEVELOPMENT ENVIRONMENT ===
 configure_development() {
+    # Create source directory for git repositories
+    su "${USER_NAME}" -c "mkdir -p ~/source"
+
     # Git configuration
     su "${USER_NAME}" -c "git config --global credential.helper /usr/lib/git-core/git-credential-libsecret"
 
@@ -143,8 +146,6 @@ install_aur_packages() {
 }
 
 clone_and_build_repositories() {
-    su "${USER_NAME}" -c "mkdir -p ~/source"
-
     IFS=' ' read -ra repositories <<<"${GITHUB_REPOSITORIES}"
     for repo in "${repositories[@]}"; do
         su "${USER_NAME}" -c "
