@@ -72,7 +72,7 @@ export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
 
 # Essential utilities
-export ADDITIONAL_PACKAGES="chafa fd feh firefox flameshot fzf ghostty git git-lfs htop jq mpv neovim nnn npm playerctl ripgrep rsync unzip zip"
+export ADDITIONAL_PACKAGES="chafa fd feh firefox flameshot fzf ghostty git git-lfs github-cli htop jq mpv neovim nnn npm playerctl ripgrep rsync unzip zip"
 
 # Virtual machine guest additions (auto-detected)
 if systemd-detect-virt -q; then
