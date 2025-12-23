@@ -51,7 +51,7 @@ fi
 
 # Detect NVIDIA GPU
 if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
-    export NVIDIA_DRIVER_PACKAGES="nvidia nvidia-utils"
+    export NVIDIA_DRIVER_PACKAGES="nvidia-open nvidia-utils"
 fi
 
 # Combine Driver packages
