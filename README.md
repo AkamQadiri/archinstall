@@ -1,31 +1,31 @@
-# Arch Linux Automated Installation
+# archinstall
 
-Automated installation for Arch Linux with hardware detection, AUR support, and dotfiles integration.
+Bash scripts that automate an Arch Linux installation with hardware detection, AUR support, and dotfiles integration.
 
 ## Overview
 
-This project provides a set of bash scripts to automate the installation of Arch Linux with a preconfigured desktop environment, automatic hardware detection, and optional virtualization support.
+The scripts partition the target disk, install a base system, detect CPU and GPU hardware, and set up an i3 window manager session with PipeWire audio. Virtualization host support and installation of your own builds and dotfiles are optional.
 
 ## Features
 
-- Automatic hardware detection (Intel/AMD CPU, AMD/NVIDIA GPU)
+- Hardware detection for Intel/AMD CPUs and Intel/AMD/NVIDIA GPUs
 - UEFI boot with GRUB
-- X11 desktop environment with PipeWire audio
-- AUR helper (yay) installation
-- GitHub repository integration for custom builds and dotfiles
-- Optional virtualization host support (libvirt/QEMU)
-- VM guest detection with automatic tools installation
+- i3 window manager (X11) with PipeWire audio
+- yay AUR helper
+- Custom builds and dotfiles pulled from your GitHub repositories
+- Optional virtualization host (libvirt/QEMU), with VFIO and IOMMU configured on bare metal
+- QEMU guest agent installed automatically inside a VM
 
-## File Structure
+## File structure
 
-- `install.sh` - Main configuration file and entry point
-- `arch_live.sh` - Executes in the live environment
-- `arch_chroot.sh` - Executes in the chroot environment
-- `disk.sfdisk` - Disk partitioning layout (GPT with EFI and root)
+- `install.sh` — configuration and entry point
+- `arch_live.sh` — runs in the live environment
+- `arch_chroot.sh` — runs in the chroot
+- `disk.sfdisk` — GPT layout (EFI + root)
 
 ## Installation
 
-1. Boot into Arch Linux installation media
+1. Boot the Arch Linux installation media.
 
 2. Install git:
 
@@ -33,59 +33,55 @@ This project provides a set of bash scripts to automate the installation of Arch
    pacman -Sy git
    ```
 
-3. Clone this repository:
+3. Clone the repository:
 
    ```bash
    git clone https://github.com/AkamQadiri/archinstall.git
    cd archinstall
    ```
 
-4. Edit `install.sh` to configure:
+4. Edit `install.sh` to set the hostname, timezone, locale, user credentials, target disk, packages, and Git repositories.
 
-   - System settings (hostname, timezone, locale)
-   - User credentials
-   - Target disk device
-   - Package selections
-   - Git repositories
+5. Run the installation:
 
-5. Execute the installation:
    ```bash
    source install.sh
    ```
 
+`install.sh` repartitions and formats `DEVICE`, erasing everything on it. Confirm the device with `lsblk` before running.
+
 ## Configuration
 
-### Required Settings
+Required:
 
-- `DEVICE` - Target installation disk (verify with `lsblk`)
-- `USER_NAME` - Primary user account name
-- `USER_PASSWORD` - User password (consider changing post-install)
+- `DEVICE` — target disk (check with `lsblk`)
+- `USER_NAME` — primary user account
+- `USER_PASSWORD` — user password (change it after install)
 
-### Optional Features
+Optional:
 
-- Uncomment `LIBVIRT_PACKAGES` to enable virtualization host support
-  - Automatically configures IOMMU and VFIO modules for PCI passthrough on bare metal systems
-- Configure `AUR_PACKAGES` for AUR packages
-- Set `GITHUB_REPOSITORIES` for custom builds (requires Makefile)
-- Set `GITHUB_DOTFILES_REPOSITORY` for dotfiles (requires install.sh)
+- Uncomment `LIBVIRT_PACKAGES` for a virtualization host. On bare metal this also configures IOMMU and the VFIO modules for PCI passthrough.
+- `AUR_PACKAGES` — packages to install from the AUR
+- `GITHUB_REPOSITORIES` — repositories to clone and build (each needs a Makefile)
+- `GITHUB_DOTFILES_REPOSITORY` — dotfiles repository (must contain `install.sh`)
 
-## Partition Layout
+## Partition layout
 
-| Partition | Size      | Type | Mount Point |
+| Partition | Size      | Type | Mount point |
 | --------- | --------- | ---- | ----------- |
-| Part 1    | 512 MiB   | EFI  | /boot/efi   |
-| Part 2    | Remaining | ext4 | /           |
+| 1         | 512 MiB   | EFI  | /boot/efi   |
+| 2         | Remaining | ext4 | /           |
 
-## Hardware Support
+## Hardware support
 
-The scripts automatically detect and install drivers for:
+Detected and installed automatically:
 
 - Intel/AMD microcode
-- Intel GPU (VA-API and Vulkan)
-- AMD GPU (Vulkan)
-- NVIDIA GPU (proprietary drivers)
-- VM guest additions (QEMU)
+- Intel GPU — VA-API and Vulkan
+- AMD GPU — VDPAU and Vulkan
+- NVIDIA GPU — open kernel modules (`nvidia-open`)
+- QEMU guest agent when running in a VM
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
