@@ -44,9 +44,9 @@ if grep -q "AuthenticAMD" /proc/cpuinfo && ! systemd-detect-virt -q; then
     export AMD_CPU_PACKAGES="amd-ucode"
 fi
 
-# Detect AMD GPU for VDPAU and Vulkan driver
+# Detect AMD GPU for Vulkan driver
 if lspci | grep -E "VGA|3D" | grep -qi "AMD\|ATI"; then
-    export AMD_GPU_PACKAGES="mesa-vdpau vulkan-radeon"
+    export AMD_GPU_PACKAGES="vulkan-radeon"
 fi
 
 # Detect NVIDIA GPU
@@ -63,7 +63,7 @@ export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
 export X_PACKAGES="dunst gnome-keyring i3blocks i3-wm libnotify lxsession numlockx perl-file-mimeinfo picom rofi rofi-calc rofi-emoji rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
 
 # Graphics drivers (combines detected hardware packages)
-export DRIVER_PACKAGES="libva-mesa-driver mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}"
+export DRIVER_PACKAGES="mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}"
 
 # Audio stack (PipeWire)
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
@@ -80,7 +80,7 @@ if systemd-detect-virt -q; then
 fi
 
 # Optional: Virtualization host packages (uncomment to enable)
-#export LIBVIRT_PACKAGES="bridge-utils dmidecode dnsmasq libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
+#export LIBVIRT_PACKAGES="dmidecode dnsmasq libguestfs openbsd-netcat qemu-desktop swtpm virt-manager"
 
 # === AUR CONFIGURATION ===
 # Dependencies for AUR packages (specify which package needs what)
