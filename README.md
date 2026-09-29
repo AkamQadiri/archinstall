@@ -9,7 +9,7 @@ The scripts partition the target disk, install a base system, detect CPU, GPU an
 ## Features
 
 - Hardware detection for Intel/AMD CPUs, Intel/AMD/NVIDIA GPUs and laptops
-- UEFI boot with GRUB
+- UEFI boot with GRUB, plus the `EFI/BOOT/BOOTX64.EFI` fallback for firmware that ignores boot entries
 - Swapfile sized to RAM, with hibernation configured
 - i3 window manager (X11) with PipeWire audio, Bluetooth and a screen locker
 - yay AUR helper

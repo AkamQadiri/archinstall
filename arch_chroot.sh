@@ -54,6 +54,10 @@ echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' >/etc/sudoers.d/temp
 # === BOOTLOADER INSTALLATION ===
 mount --mkdir "${EFI_PARTITION}" /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+
+# Fallback loader for firmware that ignores or keeps stale boot entries
+grub-install --target=x86_64-efi --removable --recheck
+
 sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
 
 # === SWAP CONFIGURATION ===
