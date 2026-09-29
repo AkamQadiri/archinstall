@@ -63,8 +63,10 @@ Optional:
 
 - Uncomment `LIBVIRT_PACKAGES` for a virtualization host. On bare metal this also configures IOMMU and the VFIO modules for PCI passthrough.
 - `AUR_PACKAGES` — packages to install from the AUR
-- `GITHUB_REPOSITORIES` — repositories to clone and build (each needs a Makefile)
-- `GITHUB_DOTFILES_REPOSITORY` — dotfiles repository (must contain `install.sh`)
+- `GITHUB_REPOSITORIES` — repositories to clone and build, as `owner/repo` (each needs a Makefile)
+- `GITHUB_DOTFILES_REPOSITORY` — dotfiles repository, as `owner/repo` (must contain `install.sh`); can be anyone's
+
+Repositories are cloned from `https://github.com/<owner>/<repo>`, independent of `GIT_NAME`, which only sets the commit author name.
 
 ## Partition layout
 

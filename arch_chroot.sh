@@ -160,8 +160,8 @@ clone_and_build_repositories() {
     for repo in "${repositories[@]}"; do
         su "${USER_NAME}" -c "
             cd ~/source
-            git clone 'https://github.com/${GIT_NAME}/${repo}'
-            cd '${repo}'
+            git clone 'https://github.com/${repo}'
+            cd '${repo#*/}'
             sudo make clean install
             sudo make clean
         "
@@ -171,8 +171,8 @@ clone_and_build_repositories() {
 install_dotfiles() {
     su "${USER_NAME}" -c "
         cd ~/source
-        git clone 'https://github.com/${GIT_NAME}/${GITHUB_DOTFILES_REPOSITORY}'
-        cd '${GITHUB_DOTFILES_REPOSITORY}'
+        git clone 'https://github.com/${GITHUB_DOTFILES_REPOSITORY}'
+        cd '${GITHUB_DOTFILES_REPOSITORY#*/}'
         ./install.sh
     "
 }
