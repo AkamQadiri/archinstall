@@ -53,6 +53,12 @@ echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' >/etc/sudoers.d/temp
 
 # === BOOTLOADER INSTALLATION ===
 mount --mkdir "${EFI_PARTITION}" /boot/efi
+
+# Remove stale boot entries left by previous installs
+for bootnum in $(efibootmgr | awk '/grub_uefi/ {print substr($1, 5, 4)}'); do
+    efibootmgr -b "${bootnum}" -B
+done
+
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 
 # Fallback loader for firmware that ignores or keeps stale boot entries
