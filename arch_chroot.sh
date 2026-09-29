@@ -37,7 +37,7 @@ echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
 
 # === PACKAGE INSTALLATION ===
 # shellcheck disable=SC2086  # We need word splitting for package lists
-pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_PACKAGES} ${ADDITIONAL_PACKAGES} grub efibootmgr networkmanager
+pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_PACKAGES} ${BLUETOOTH_PACKAGES} ${LAPTOP_PACKAGES:-} ${ADDITIONAL_PACKAGES} grub efibootmgr networkmanager
 
 # === USER GROUP CONFIGURATION ===
 usermod -aG "${USER_GROUPS}" "${USER_NAME}"
@@ -56,8 +56,18 @@ mount --mkdir "${EFI_PARTITION}" /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
 
+# === SWAP CONFIGURATION ===
+mkswap --file /swapfile --size "${SWAP_SIZE}"
+echo "/swapfile none swap defaults 0 0" >>/etc/fstab
+
+# Resume from swapfile for hibernation
+ROOT_UUID=$(blkid -s UUID -o value "${ROOT_PARTITION}")
+RESUME_OFFSET=$(filefrag -v /swapfile | awk '$1 == "0:" {print substr($4, 1, length($4) - 2)}')
+sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"\(.*\)\"/GRUB_CMDLINE_LINUX_DEFAULT=\"\1 resume=UUID=${ROOT_UUID} resume_offset=${RESUME_OFFSET}\"/" /etc/default/grub
+
 # === SERVICE CONFIGURATION ===
-systemctl enable NetworkManager
+# shellcheck disable=SC2086  # We need word splitting for service lists
+systemctl enable ${SYSTEMCTL_SERVICES}
 # shellcheck disable=SC2086  # We need word splitting for service lists
 systemctl --global enable ${SYSTEMCTL_GLOBAL_SERVICES}
 

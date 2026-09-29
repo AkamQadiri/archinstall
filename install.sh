@@ -23,6 +23,10 @@ else
     export ROOT_PARTITION="${DEVICE}2"
 fi
 
+# Swapfile size (matches RAM so hibernation fits)
+SWAP_SIZE="$(awk '/MemTotal/ {print int(($2 + 1048575) / 1048576)}' /proc/meminfo)G"
+export SWAP_SIZE
+
 # === USER CONFIGURATION ===
 export USER_NAME="akam"
 export USER_PASSWORD="secret"
@@ -54,19 +58,34 @@ if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
     export NVIDIA_DRIVER_PACKAGES="nvidia-open nvidia-utils"
 fi
 
+# Detect laptop (battery present) for power management, audio firmware and display profiles
+if find /sys/class/power_supply/ -name "BAT*" | grep -q .; then
+    export LAPTOP_PACKAGES="autorandr brightnessctl sof-firmware tlp upower"
+    export LAPTOP_SERVICES="autorandr.service autorandr-lid-listener.service tlp.service upower.service"
+
+    # Intel laptops also get the thermal daemon
+    if grep -q "GenuineIntel" /proc/cpuinfo; then
+        export LAPTOP_PACKAGES="${LAPTOP_PACKAGES} thermald"
+        export LAPTOP_SERVICES="${LAPTOP_SERVICES} thermald.service"
+    fi
+fi
+
 # Combine Driver packages
 export INTEL_DRIVER_PACKAGES="${INTEL_CPU_PACKAGES} ${INTEL_GPU_PACKAGES}"
 export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
 
 # === PACKAGE DEFINITIONS ===
 # X11 and desktop environment components
-export X_PACKAGES="dunst gnome-keyring i3blocks i3-wm libnotify lxsession numlockx perl-file-mimeinfo picom rofi rofi-calc rofi-emoji rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit"
+export X_PACKAGES="dunst gnome-keyring i3blocks i3lock i3-wm libnotify lxsession numlockx perl-file-mimeinfo picom rofi rofi-calc rofi-emoji rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit xss-lock"
 
 # Graphics drivers (combines detected hardware packages)
 export DRIVER_PACKAGES="mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}"
 
 # Audio stack (PipeWire)
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
+
+# Bluetooth stack
+export BLUETOOTH_PACKAGES="bluez bluez-utils"
 
 # Font packages for proper text rendering
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
@@ -91,6 +110,9 @@ export AUR_DEPENDENCIES=""
 export AUR_PACKAGES="ttf-font-awesome-5"
 
 # === SERVICE CONFIGURATION ===
+# System services to enable (combines detected hardware services)
+export SYSTEMCTL_SERVICES="bluetooth.service NetworkManager.service ${LAPTOP_SERVICES}"
+
 # User services to enable globally
 export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"
 

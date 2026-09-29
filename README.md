@@ -4,13 +4,14 @@ Bash scripts that automate an Arch Linux installation with hardware detection, A
 
 ## Overview
 
-The scripts partition the target disk, install a base system, detect CPU and GPU hardware, and set up an i3 window manager session with PipeWire audio. Virtualization host support and installation of your own builds and dotfiles are optional.
+The scripts partition the target disk, install a base system, detect CPU, GPU and laptop hardware, and set up an i3 window manager session with PipeWire audio and Bluetooth. Virtualization host support and installation of your own builds and dotfiles are optional.
 
 ## Features
 
-- Hardware detection for Intel/AMD CPUs and Intel/AMD/NVIDIA GPUs
+- Hardware detection for Intel/AMD CPUs, Intel/AMD/NVIDIA GPUs and laptops
 - UEFI boot with GRUB
-- i3 window manager (X11) with PipeWire audio
+- Swapfile sized to RAM, with hibernation configured
+- i3 window manager (X11) with PipeWire audio, Bluetooth and a screen locker
 - yay AUR helper
 - Custom builds and dotfiles pulled from your GitHub repositories
 - Optional virtualization host (libvirt/QEMU), with VFIO and IOMMU configured on bare metal
@@ -72,14 +73,17 @@ Optional:
 | 1         | 512 MiB   | EFI  | /boot/efi   |
 | 2         | Remaining | ext4 | /           |
 
+Swap is a `/swapfile` on the root partition, sized to RAM so hibernation fits. The kernel resumes from it via `resume=` and `resume_offset=` in GRUB.
+
 ## Hardware support
 
 Detected and installed automatically:
 
 - Intel/AMD microcode
 - Intel GPU — VA-API and Vulkan
-- AMD GPU — VDPAU and Vulkan
+- AMD GPU — Vulkan
 - NVIDIA GPU — open kernel modules (`nvidia-open`)
+- Laptop (battery present) — TLP, UPower (critical battery action), SOF audio firmware, `brightnessctl`, `autorandr` display profiles, and `thermald` on Intel CPUs
 - QEMU guest agent when running in a VM
 
 ## License
