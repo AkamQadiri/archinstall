@@ -107,7 +107,7 @@ fi
 export AUR_DEPENDENCIES=""
 
 # AUR packages to install (requires git)
-export AUR_PACKAGES="ttf-font-awesome-5"
+export AUR_PACKAGES="dracula-gtk-theme dracula-icons-git ttf-font-awesome-5"
 
 # === SERVICE CONFIGURATION ===
 # System services to enable (combines detected hardware services)
