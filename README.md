@@ -85,7 +85,7 @@ Detected and installed automatically:
 - Intel GPU — VA-API and Vulkan
 - AMD GPU — Vulkan
 - NVIDIA GPU — open kernel modules (`nvidia-open`)
-- Laptop (battery present) — TLP, UPower (critical battery action), SOF audio firmware, `brightnessctl`, `autorandr` display profiles, and `thermald` on Intel CPUs
+- Laptop (battery present) — TLP, UPower (critical battery action), SOF audio firmware, `brightnessctl`, `autorandr` profile switching on lid close, and `thermald` on Intel CPUs
 - QEMU guest agent when running in a VM
 
 ## License
