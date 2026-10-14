@@ -60,8 +60,8 @@ fi
 
 # Detect laptop (battery present) for power management, audio firmware and lid display switching
 if find /sys/class/power_supply/ -name "BAT*" | grep -q .; then
-    export LAPTOP_PACKAGES="brightnessctl sof-firmware tlp upower"
-    export LAPTOP_SERVICES="autorandr-lid-listener.service tlp.service upower.service"
+    export LAPTOP_PACKAGES="brightnessctl sof-firmware tlp"
+    export LAPTOP_SERVICES="autorandr-lid-listener.service tlp.service"
 
     # Intel laptops also get the thermal daemon
     if grep -q "GenuineIntel" /proc/cpuinfo; then
@@ -76,7 +76,7 @@ export AMD_DRIVER_PACKAGES="${AMD_CPU_PACKAGES} ${AMD_GPU_PACKAGES}"
 
 # === PACKAGE DEFINITIONS ===
 # X11 and desktop environment components
-export X_PACKAGES="autorandr dunst gnome-keyring i3blocks i3lock i3-wm libnotify lxsession numlockx perl-file-mimeinfo picom rofi rofi-calc rofi-emoji rtkit unclutter xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit xss-lock"
+export X_PACKAGES="autorandr dunst gnome-keyring i3blocks i3lock i3-wm libnotify lxsession numlockx perl-file-mimeinfo picom rofi rofi-calc rofi-emoji rtkit unclutter upower xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils xdotool xorg xorg-apps xorg-xinit xss-lock"
 
 # Graphics drivers (combines detected hardware packages)
 export DRIVER_PACKAGES="mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGES} ${AMD_DRIVER_PACKAGES} ${NVIDIA_DRIVER_PACKAGES}"
@@ -111,7 +111,7 @@ export AUR_PACKAGES="dracula-gtk-theme dracula-icons-git ttf-font-awesome-5"
 
 # === SERVICE CONFIGURATION ===
 # System services to enable (combines detected hardware services)
-export SYSTEMCTL_SERVICES="autorandr.service bluetooth.service NetworkManager.service ${LAPTOP_SERVICES}"
+export SYSTEMCTL_SERVICES="autorandr.service bluetooth.service NetworkManager.service upower.service ${LAPTOP_SERVICES}"
 
 # User services to enable globally
 export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"
