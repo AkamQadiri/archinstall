@@ -111,7 +111,7 @@ export AUR_PACKAGES="dracula-gtk-theme dracula-icons-git ttf-font-awesome-5"
 
 # === SERVICE CONFIGURATION ===
 # System services to enable (combines detected hardware services)
-export SYSTEMCTL_SERVICES="autorandr.service bluetooth.service NetworkManager.service upower.service ${LAPTOP_SERVICES}"
+export SYSTEMCTL_SERVICES="autorandr.service bluetooth.service NetworkManager.service systemd-timesyncd.service upower.service ${LAPTOP_SERVICES}"
 
 # User services to enable globally
 export SYSTEMCTL_GLOBAL_SERVICES="pipewire.service pipewire-pulse.service wireplumber.service"
