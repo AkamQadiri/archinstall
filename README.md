@@ -87,6 +87,7 @@ Detected and installed automatically:
 - AMD GPU — Vulkan
 - NVIDIA GPU — open kernel modules (`nvidia-open`)
 - Laptop (battery present) — TLP, hibernation on critical battery (UPower), SOF audio firmware, `brightnessctl`, `autorandr` profile switching on lid close, and `thermald` on Intel CPUs
+- Firmware updates (`fwupd`) on bare metal
 - QEMU guest agent when running in a VM
 
 ## License
