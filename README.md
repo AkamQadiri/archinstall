@@ -11,7 +11,7 @@ The scripts partition the target disk, install a base system, detect CPU, GPU an
 - Hardware detection for Intel/AMD CPUs, Intel/AMD/NVIDIA GPUs and laptops
 - UEFI boot with GRUB, plus the `EFI/BOOT/BOOTX64.EFI` fallback for firmware that ignores boot entries
 - Swapfile sized to RAM, with hibernation configured
-- i3 window manager (X11) with PipeWire audio, Bluetooth and a screen locker
+- i3 window manager (X11) with PipeWire audio, Bluetooth (bluetui) and a screen locker
 - yay AUR helper
 - Custom builds and dotfiles pulled from your GitHub repositories
 - Optional virtualization host (libvirt/QEMU), with VFIO and IOMMU configured on bare metal
@@ -85,7 +85,7 @@ Detected and installed automatically:
 - Intel GPU — VA-API and Vulkan
 - AMD GPU — Vulkan
 - NVIDIA GPU — open kernel modules (`nvidia-open`)
-- Laptop (battery present) — TLP, UPower (critical battery action), SOF audio firmware, `brightnessctl`, `autorandr` profile switching on lid close, and `thermald` on Intel CPUs
+- Laptop (battery present) — TLP, hibernation on critical battery (UPower), SOF audio firmware, `brightnessctl`, `autorandr` profile switching on lid close, and `thermald` on Intel CPUs
 - QEMU guest agent when running in a VM
 
 ## License
