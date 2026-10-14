@@ -85,7 +85,7 @@ export DRIVER_PACKAGES="mesa mesa-utils vulkan-icd-loader ${INTEL_DRIVER_PACKAGE
 export AUDIO_PACKAGES="pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber"
 
 # Bluetooth stack
-export BLUETOOTH_PACKAGES="bluez bluez-utils"
+export BLUETOOTH_PACKAGES="bluetui bluez bluez-utils"
 
 # Font packages for proper text rendering
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
