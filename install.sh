@@ -91,7 +91,7 @@ export BLUETOOTH_PACKAGES="bluetui bluez bluez-utils"
 export FONT_PACKAGES="noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra"
 
 # Essential utilities
-export ADDITIONAL_PACKAGES="chafa fd feh firefox flameshot fzf ghostty git git-lfs github-cli htop iw jq mpv neovim nnn npm playerctl ripgrep rsync tree-sitter-cli udiskie unzip zip"
+export ADDITIONAL_PACKAGES="chafa fd feh firefox flameshot fzf ghostty git git-lfs github-cli htop iw jq mpv neovim nnn npm playerctl ripgrep rsync tree-sitter-cli udiskie unzip xclip zip"
 
 # Virtual machine guest additions, or firmware updates on bare metal (auto-detected)
 if systemd-detect-virt -q; then
