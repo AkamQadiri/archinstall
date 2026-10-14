@@ -5,7 +5,7 @@ set -euo pipefail
 # Configures system settings, users, packages, and bootloader
 
 # === PACMAN CONFIGURATION ===
-sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
+sed -i "s/^#\?ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
 
 # === MAKEPKG OPTIMIZATION ===
 sed -i 's/-march=x86-64 -mtune=generic/-march=native/' /etc/makepkg.conf

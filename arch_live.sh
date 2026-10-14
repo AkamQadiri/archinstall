@@ -23,7 +23,7 @@ sfdisk "${DEVICE}" <disk.sfdisk
 pacman --noconfirm -Sy archlinux-keyring
 
 # === PACMAN CONFIGURATION ===
-sed -i "s/#ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
+sed -i "s/^#\?ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
 
 # === FILESYSTEM CREATION ===
 echo "Creating filesystems..."
