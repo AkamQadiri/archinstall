@@ -60,8 +60,8 @@ fi
 
 # Detect laptop (battery present) for power management, audio firmware and lid display switching
 if find /sys/class/power_supply/ -name "BAT*" | grep -q .; then
-    export LAPTOP_PACKAGES="brightnessctl sof-firmware tlp"
-    export LAPTOP_SERVICES="autorandr-lid-listener.service tlp.service"
+    export LAPTOP_PACKAGES="brightnessctl sof-firmware tlp tlp-pd"
+    export LAPTOP_SERVICES="autorandr-lid-listener.service tlp.service tlp-pd.service"
 
     # Intel laptops also get the thermal daemon
     if grep -q "GenuineIntel" /proc/cpuinfo; then
