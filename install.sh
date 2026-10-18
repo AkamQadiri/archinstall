@@ -34,13 +34,16 @@ export USER_PASSWORD="secret"
 export USER_GROUPS="wheel,uucp"
 
 # === HARDWARE DETECTION ===
+# All PCI display devices (class 03xx), as hybrid laptops often list the second GPU as neither VGA nor 3D
+GPUS=$(lspci -nn | grep -E '\[03[0-9a-f]{2}\]')
+
 # Detect Intel CPU for microcode (skip in VMs)
 if grep -q "GenuineIntel" /proc/cpuinfo && ! systemd-detect-virt -q; then
     export INTEL_CPU_PACKAGES="intel-ucode"
 fi
 
 # Detect Intel GPU for VA-API and Vulkan driver
-if lspci | grep -E "VGA|3D" | grep -qi "Intel"; then
+if grep -q '\[8086:' <<<"${GPUS}"; then
     export INTEL_GPU_PACKAGES="intel-media-driver vulkan-intel"
 fi
 
@@ -50,13 +53,12 @@ if grep -q "AuthenticAMD" /proc/cpuinfo && ! systemd-detect-virt -q; then
 fi
 
 # Detect AMD GPU for Vulkan driver
-# Whole words, as case-insensitive "ati" matches "compatible" and "Corporation"
-if lspci | grep -E "VGA|3D" | grep -Eq '\b(AMD|ATI)\b'; then
+if grep -q '\[1002:' <<<"${GPUS}"; then
     export AMD_GPU_PACKAGES="vulkan-radeon"
 fi
 
 # Detect NVIDIA GPU
-if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
+if grep -q '\[10de:' <<<"${GPUS}"; then
     export NVIDIA_DRIVER_PACKAGES="nvidia-open nvidia-utils"
 fi
 
