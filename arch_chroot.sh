@@ -35,6 +35,10 @@ echo "${HOST_NAME}" >/etc/hostname
 useradd -m "${USER_NAME}"
 echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
 
+# Keep the password out of the environment of every later command, as su
+# without - passes it on to AUR builds, Makefiles and the dotfiles installer
+unset USER_PASSWORD
+
 # === PACKAGE INSTALLATION ===
 # shellcheck disable=SC2086  # We need word splitting for package lists
 pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_PACKAGES} ${BLUETOOTH_PACKAGES} ${LAPTOP_PACKAGES:-} ${ADDITIONAL_PACKAGES} grub efibootmgr networkmanager
