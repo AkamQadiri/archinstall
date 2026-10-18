@@ -49,7 +49,8 @@ if grep -q "AuthenticAMD" /proc/cpuinfo && ! systemd-detect-virt -q; then
 fi
 
 # Detect AMD GPU for Vulkan driver
-if lspci | grep -E "VGA|3D" | grep -qi "AMD\|ATI"; then
+# Whole words, as case-insensitive "ati" matches "compatible" and "Corporation"
+if lspci | grep -E "VGA|3D" | grep -Eq '\b(AMD|ATI)\b'; then
     export AMD_GPU_PACKAGES="vulkan-radeon"
 fi
 
