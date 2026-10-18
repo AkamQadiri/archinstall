@@ -26,12 +26,13 @@ timedatectl set-ntp true
 echo "Partitioning disk ${DEVICE}..."
 sfdisk "${DEVICE}" <disk.sfdisk
 
+# === PACMAN CONFIGURATION ===
+# Before the first download, so the keyring and pacstrap both use it
+sed -i "s/^#\?ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
+
 # === KEYRING UPDATE ===
 # Update keyring to prevent GPG errors
 pacman --noconfirm -Sy archlinux-keyring
-
-# === PACMAN CONFIGURATION ===
-sed -i "s/^#\?ParallelDownloads.*/ParallelDownloads = ${PARALLELDOWNLOADS}/" /etc/pacman.conf
 
 # === FILESYSTEM CREATION ===
 echo "Creating filesystems..."
