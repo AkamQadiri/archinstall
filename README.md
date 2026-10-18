@@ -13,6 +13,7 @@ The scripts partition the target disk, install a base system, detect CPU, GPU an
 - Swapfile sized to RAM, with hibernation configured
 - Time sync and weekly SSD TRIM
 - i3 window manager (X11) with PipeWire audio, Bluetooth (bluetui) and a screen locker
+- GNOME Keyring unlocked with the login password at console login
 - yay AUR helper
 - Custom builds and dotfiles pulled from your GitHub repositories
 - Optional virtualization host (libvirt/QEMU), with VFIO and IOMMU configured on bare metal

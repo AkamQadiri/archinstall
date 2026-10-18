@@ -42,6 +42,16 @@ pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_
 # === USER GROUP CONFIGURATION ===
 usermod -aG "${USER_GROUPS}" "${USER_NAME}"
 
+# === KEYRING UNLOCK ===
+# Unlock the login keyring with the login password at console login, and
+# change its password along with the login password. Optional, so it can never
+# block a login. No auto_start, as the daemon's systemd socket starts it
+{
+    echo 'auth       optional     pam_gnome_keyring.so'
+    echo 'session    optional     pam_gnome_keyring.so'
+} >>/etc/pam.d/login
+echo 'password	optional	pam_gnome_keyring.so' >>/etc/pam.d/passwd
+
 # === SUDO CONFIGURATION ===
 {
     echo '%wheel ALL=(ALL:ALL) ALL'
