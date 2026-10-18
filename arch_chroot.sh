@@ -48,7 +48,9 @@ usermod -aG "${USER_GROUPS}" "${USER_NAME}"
     echo 'ALL ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown'
 } >/etc/sudoers.d/default
 
-# Temporary passwordless sudo for setup
+# Temporary passwordless sudo for setup, removed on any exit so a failed
+# install never leaves it behind
+trap 'rm -f /etc/sudoers.d/temp' EXIT
 echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' >/etc/sudoers.d/temp
 
 # === BOOTLOADER INSTALLATION ===
@@ -188,6 +190,3 @@ install_dotfiles() {
 }
 
 command -v git &>/dev/null && configure_development
-
-# === CLEANUP ===
-rm -f /etc/sudoers.d/temp
