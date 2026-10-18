@@ -62,10 +62,7 @@ usermod -aG "${USER_GROUPS}" "${USER_NAME}"
 echo 'password	optional	pam_gnome_keyring.so' >>/etc/pam.d/passwd
 
 # === SUDO CONFIGURATION ===
-{
-    echo '%wheel ALL=(ALL:ALL) ALL'
-    echo 'ALL ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown'
-} >/etc/sudoers.d/default
+echo '%wheel ALL=(ALL:ALL) ALL' >/etc/sudoers.d/default
 
 # Temporary passwordless sudo for setup, removed on any exit so a failed
 # install never leaves it behind
