@@ -57,8 +57,15 @@ if grep -q '\[1002:' <<<"${GPUS}"; then
     export AMD_GPU_PACKAGES="vulkan-radeon"
 fi
 
-# Detect NVIDIA GPU
-if grep -q '\[10de:' <<<"${GPUS}"; then
+# Detect NVIDIA GPU by chip family: open modules for Turing and newer, the AUR
+# 580xx driver for Maxwell to Volta, nouveau for anything older
+NVIDIA_GPUS=$(grep '\[10de:' <<<"${GPUS}")
+if grep -Eq '\b(GM|GP|GV)[0-9]{3}' <<<"${NVIDIA_GPUS}"; then
+    export NVIDIA_DRIVER_PACKAGES="linux-headers"
+    export NVIDIA_AUR_PACKAGES="nvidia-580xx-dkms nvidia-580xx-utils"
+elif grep -Eq '\b(NV[0-9]+|C[0-9]{2}|G[0-9]{2}|GT[0-9]{3}|GF[0-9]{3}|GK[0-9]{3})' <<<"${NVIDIA_GPUS}"; then
+    export NVIDIA_NOUVEAU="true"
+elif [[ -n "${NVIDIA_GPUS}" ]]; then
     export NVIDIA_DRIVER_PACKAGES="nvidia-open nvidia-utils"
 fi
 
@@ -113,7 +120,7 @@ fi
 export AUR_DEPENDENCIES=""
 
 # AUR packages to install (requires git)
-export AUR_PACKAGES="dracula-gtk-theme dracula-icons-git ttf-font-awesome-5"
+export AUR_PACKAGES="dracula-gtk-theme dracula-icons-git ttf-font-awesome-5 ${NVIDIA_AUR_PACKAGES}"
 
 # === SERVICE CONFIGURATION ===
 # System services to enable (combines detected hardware services)

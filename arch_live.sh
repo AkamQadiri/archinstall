@@ -15,6 +15,11 @@ TEE_PID=$!
 # sfdisk finding the disk in use
 trap 'mountpoint -q /mnt && umount -R /mnt' EXIT
 
+# === HARDWARE WARNINGS ===
+if [[ -n "${NVIDIA_NOUVEAU:-}" ]]; then
+    echo "Warning: NVIDIA GPU too old for any packaged driver, using nouveau"
+fi
+
 # === KEYBOARD CONFIGURATION ===
 loadkeys "${KEYBOARD}"
 

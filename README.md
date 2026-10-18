@@ -86,7 +86,7 @@ Detected and installed automatically:
 - Intel/AMD microcode
 - Intel GPU — VA-API and Vulkan
 - AMD GPU — Vulkan
-- NVIDIA GPU — open kernel modules (`nvidia-open`)
+- NVIDIA GPU — open kernel modules (`nvidia-open`) on Turing and newer, the 580xx driver from the AUR (`nvidia-580xx-dkms`) on Maxwell, Pascal and Volta, and nouveau on older chips
 - Laptop (battery present) — TLP with tlp-pd for power profile switching, hibernation on critical battery (UPower), SOF audio firmware, `brightnessctl`, `autorandr` profile switching on lid close, and `thermald` on Intel CPUs
 - Firmware updates (`fwupd`) on bare metal
 - QEMU guest agent when running in a VM
