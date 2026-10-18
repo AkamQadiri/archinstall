@@ -10,6 +10,11 @@ exec 3>&1 4>&2
 exec &> >(tee -a archinstall.log)
 TEE_PID=$!
 
+# === CLEANUP ON FAILURE ===
+# Unmount the target on any exit, so a failed install can be re-run without
+# sfdisk finding the disk in use
+trap 'mountpoint -q /mnt && umount -R /mnt' EXIT
+
 # === KEYBOARD CONFIGURATION ===
 loadkeys "${KEYBOARD}"
 
