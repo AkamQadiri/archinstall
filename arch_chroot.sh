@@ -17,18 +17,18 @@ ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
 hwclock --systohc
 
 # === LOCALE CONFIGURATION ===
-sed -i "/${LANGUAGE}/s/^#//" /etc/locale.gen
+sed -i "/${LOCALE}/s/^#//" /etc/locale.gen
 locale-gen
-echo "LANG=${LANGUAGE}" >/etc/locale.conf
+echo "LANG=${LOCALE}" >/etc/locale.conf
 echo "KEYMAP=${KEYBOARD}" >/etc/vconsole.conf
 
 # === NETWORK CONFIGURATION ===
-echo "${HOSTNAME}" >/etc/hostname
+echo "${HOST_NAME}" >/etc/hostname
 
 {
     echo "127.0.0.1      localhost"
     echo "::1            localhost"
-    echo "127.0.0.1      ${HOSTNAME}.localdomain ${HOSTNAME}"
+    echo "127.0.0.1      ${HOST_NAME}.localdomain ${HOST_NAME}"
 } >/etc/hosts
 
 # === USER CREATION ===

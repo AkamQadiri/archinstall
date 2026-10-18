@@ -4,8 +4,8 @@
 # Run with: source install.sh
 
 # === SYSTEM CONFIGURATION ===
-export HOSTNAME="archtop"
-export LANGUAGE="en_US.UTF-8"
+export HOST_NAME="archtop"
+export LOCALE="en_US.UTF-8"
 export KEYBOARD="no"
 export TIMEZONE="Europe/Oslo"
 export PARALLELDOWNLOADS="15"
