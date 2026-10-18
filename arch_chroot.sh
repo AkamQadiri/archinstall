@@ -170,7 +170,9 @@ install_aur_packages() {
 clone_and_build_repositories() {
     IFS=' ' read -ra repositories <<<"${GITHUB_REPOSITORIES}"
     for repo in "${repositories[@]}"; do
+        # set -e so a failed clone or build stops the install
         su "${USER_NAME}" -c "
+            set -e
             cd ~/source
             git clone 'https://github.com/${repo}'
             cd '${repo#*/}'
@@ -182,6 +184,7 @@ clone_and_build_repositories() {
 
 install_dotfiles() {
     su "${USER_NAME}" -c "
+        set -e
         cd ~/source
         git clone 'https://github.com/${GITHUB_DOTFILES_REPOSITORY}'
         cd '${GITHUB_DOTFILES_REPOSITORY#*/}'
