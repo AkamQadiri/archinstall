@@ -125,9 +125,9 @@ configure_development() {
         su "${USER_NAME}" -c "git lfs install"
     fi
 
-    # Git identity
-    [[ -n "${GIT_EMAIL:-}" ]] && su "${USER_NAME}" -c "git config --global user.email '${GIT_EMAIL}'"
-    [[ -n "${GIT_NAME:-}" ]] && su "${USER_NAME}" -c "git config --global user.name '${GIT_NAME}'"
+    # Git identity, quoted with %q so names like O'Brien survive su -c
+    [[ -n "${GIT_EMAIL:-}" ]] && su "${USER_NAME}" -c "git config --global user.email $(printf '%q' "${GIT_EMAIL}")"
+    [[ -n "${GIT_NAME:-}" ]] && su "${USER_NAME}" -c "git config --global user.name $(printf '%q' "${GIT_NAME}")"
 
     # AUR helper installation
     if [[ -n "${AUR_PACKAGES:-}" ]]; then
