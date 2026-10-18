@@ -44,7 +44,7 @@ mount "${ROOT_PARTITION}" /mnt
 
 # === BASE SYSTEM INSTALLATION ===
 echo "Installing base system..."
-pacstrap /mnt base base-devel linux linux-headers linux-firmware dkms e2fsprogs
+pacstrap /mnt base base-devel linux linux-firmware e2fsprogs
 
 # === FILESYSTEM TABLE ===
 genfstab -U /mnt >>/mnt/etc/fstab
