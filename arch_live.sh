@@ -5,7 +5,10 @@ set -euo pipefail
 # Executes partitioning, filesystem creation, and base system installation
 
 # === LOGGING SETUP ===
+# Keep the terminal on fds 3 and 4 so logging can be stopped before the log is moved
+exec 3>&1 4>&2
 exec &> >(tee -a archinstall.log)
+TEE_PID=$!
 
 # === KEYBOARD CONFIGURATION ===
 loadkeys "${KEYBOARD}"
@@ -45,8 +48,13 @@ cp arch_chroot.sh /mnt/root/arch_chroot.sh
 arch-chroot /mnt /root/arch_chroot.sh
 
 # === CLEANUP ===
-mv archinstall.log /mnt/var/log/archinstall.log
 rm /mnt/root/arch_chroot.sh
+echo "Arch Linux installed successfully!"
+
+# Stop logging and let tee write its last lines before the log is moved
+exec 1>&3 2>&4 3>&- 4>&-
+wait "${TEE_PID}"
+mv archinstall.log /mnt/var/log/archinstall.log
 umount -R /mnt
 
-echo "Arch Linux installed successfully! You may reboot now."
+echo "You may reboot now."
