@@ -39,6 +39,11 @@ echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
 # shellcheck disable=SC2086  # We need word splitting for package lists
 pacman --noconfirm -S ${X_PACKAGES} ${DRIVER_PACKAGES} ${AUDIO_PACKAGES} ${FONT_PACKAGES} ${BLUETOOTH_PACKAGES} ${LAPTOP_PACKAGES:-} ${ADDITIONAL_PACKAGES} grub efibootmgr networkmanager
 
+# === WIRELESS REGULATORY DOMAIN ===
+# Without a country the kernel keeps the restrictive world domain, which
+# limits WiFi channels and transmit power
+sed -i "s/^#WIRELESS_REGDOM=\"${WIRELESS_REGDOM}\"/WIRELESS_REGDOM=\"${WIRELESS_REGDOM}\"/" /etc/conf.d/wireless-regdom
+
 # === USER GROUP CONFIGURATION ===
 usermod -aG "${USER_GROUPS}" "${USER_NAME}"
 

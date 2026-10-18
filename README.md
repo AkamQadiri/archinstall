@@ -43,7 +43,7 @@ The scripts partition the target disk, install a base system, detect CPU, GPU an
    cd archinstall
    ```
 
-4. Edit `install.sh` to set the hostname, timezone, locale, user credentials, target disk, packages, and Git repositories.
+4. Edit `install.sh` to set the hostname, timezone, WiFi country, locale, user credentials, target disk, packages, and Git repositories.
 
 5. Run the installation:
 

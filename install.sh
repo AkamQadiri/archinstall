@@ -8,6 +8,7 @@ export HOST_NAME="archtop"
 export LOCALE="en_US.UTF-8"
 export KEYBOARD="no"
 export TIMEZONE="Europe/Oslo"
+export WIRELESS_REGDOM="NO" # WiFi country, as an ISO 3166 code
 export PARALLELDOWNLOADS="15"
 
 # === STORAGE CONFIGURATION ===
