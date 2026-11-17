@@ -63,7 +63,7 @@ Required:
 
 Optional:
 
-- Uncomment `LIBVIRT_PACKAGES` for a virtualization host. On bare metal this also configures IOMMU and the VFIO modules for PCI passthrough.
+- Uncomment `LIBVIRT_PACKAGES` for a virtualization host. On bare metal this also configures IOMMU and the VFIO modules for PCI passthrough. libvirtd starts on first use, and with it the VMs and networks set to autostart.
 - `AUR_PACKAGES` — packages to install from the AUR
 - `GITHUB_REPOSITORIES` — repositories to clone and build, as `owner/repo` (each needs a Makefile)
 - `GITHUB_DOTFILES_REPOSITORY` — dotfiles repository, as `owner/repo` (must contain `install.sh`); can be anyone's

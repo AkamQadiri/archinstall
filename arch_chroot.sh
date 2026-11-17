@@ -112,7 +112,8 @@ configure_virtualization() {
         -e 's/#auth_unix_rw.*/auth_unix_rw = "none"/' \
         /etc/libvirt/libvirtd.conf
 
-    systemctl enable libvirtd
+    # Socket activation, as nothing needs libvirtd until a client connects
+    systemctl enable libvirtd.socket
     usermod -aG libvirt "${USER_NAME}"
 
     # Configure IOMMU for bare metal
