@@ -104,16 +104,11 @@ configure_virtualization() {
     # shellcheck disable=SC2086  # We need word splitting for package lists
     pacman --noconfirm -S ${LIBVIRT_PACKAGES}
 
-    # Configure libvirt permissions
-    sed -i -e '/#unix_sock_group/s/^#//' \
-        -e '/#unix_sock_ro_perms/s/^#//' \
-        -e '/#unix_sock_rw_perms/s/^#//' \
-        -e 's/#auth_unix_ro.*/auth_unix_ro = "none"/' \
-        -e 's/#auth_unix_rw.*/auth_unix_rw = "none"/' \
-        /etc/libvirt/libvirtd.conf
-
     # Socket activation, as nothing needs libvirtd until a client connects
     systemctl enable libvirtd.socket
+
+    # The libvirt group manages VMs without a password, through the polkit rule
+    # the package ships
     usermod -aG libvirt "${USER_NAME}"
 
     # Configure IOMMU for bare metal
